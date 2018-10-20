@@ -85,24 +85,25 @@ hash_t* hash_crear(hash_destruir_dato_t destruir_dato) {
 }
 
 bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
-
+    hash_destruir_dato_t destruir_dato = hash->destruir_dato;
+    
     lista_iter_t* l_iter = crear_y_posicionar_iterador(hash, clave);
     hash_campo_t* campo_act = lista_iter_ver_actual(l_iter);
-    char* clave_cpy = strdup(clave);
-    if (!clave_cpy) return false;
 
     if(!campo_act) {
+        char* clave_cpy = strdup(clave);
+        if (!clave_cpy) return false;
         if(!lista_iter_insertar(l_iter, hash_campo_crear(clave_cpy, dato))) {
             free(clave_cpy);
             return false;
         }
+        hash->cantidad ++;
     }
     else {   
-        campo_act->clave = clave_cpy;
+        if(destruir_dato) destruir_dato(campo_act->valor);
         campo_act->valor = dato;
     }
     lista_iter_destruir(l_iter);
-    hash->cantidad ++;
     return true;
 }
 
