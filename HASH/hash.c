@@ -150,7 +150,7 @@ void hash_destruir(hash_t *hash) {
     for (size_t i = 0; i < hash->largo; i++) {
         hash_campo_t* campo_borrado = lista_borrar_primero(hash->tabla[i]);
         while(campo_borrado) {
-            destruir_dato(campo_borrado);
+			if (destruir_dato) destruir_dato(campo_borrado);
             campo_borrado = lista_borrar_primero(hash->tabla[i]);
         }
         lista_destruir(hash->tabla[i], NULL);
