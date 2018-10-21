@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LARGO_INI 100            //EJEMPLO
-#define FACTOR_REDIMENSION 3     //EJEMPLO
-#define MULTIP_REDIMENSION 2     //EJEMPLO
+#define LARGO_INI 50          
+#define FACTOR_REDIMENSION 4     
+#define MULTIP_REDIMENSION 3     
 
 typedef struct hash_campo {
     char *clave;
@@ -53,11 +53,11 @@ size_t funcion_hash (const char* str, size_t modulo) {
 
 lista_iter_t* crear_y_posicionar_iterador(const hash_t* hash, const char* clave) { 
     
-    size_t idx_tabla = funcion_hash(clave, hash->largo);                // SI HAY MATCH CON LA CLAVE ES EL ACTUAL DEL ITERADOR
-    lista_iter_t* l_iter = lista_iter_crear(hash->tabla[idx_tabla]);    // SI NO EXISTE LA CLAVE EL ITERADOR ITERA HASTA EL FINAL Y APUNTA A NULL.
+    size_t idx_tabla = funcion_hash(clave, hash->largo);              // SI HAY MATCH CON LA CLAVE ES EL ACTUAL DEL ITERADOR
+    lista_iter_t* l_iter = lista_iter_crear(hash->tabla[idx_tabla]);  // SI NO EXISTE LA CLAVE EL ITERADOR ITERA HASTA EL FINAL Y APUNTA A NULL.
 
     hash_campo_t* campo_act = lista_iter_ver_actual(l_iter);             
-    while (campo_act && (!strcmp(campo_act->clave, clave) == 0)) {      // FUNCION UTIL PARA PRIMITIVAS GUARDAR, BORRAR, OBTENER, PERTENECE
+    while (campo_act && (!strcmp(campo_act->clave, clave) == 0)) {    // FUNCION UTIL PARA PRIMITIVAS GUARDAR, BORRAR, OBTENER, PERTENECE
         lista_iter_avanzar(l_iter);                                     
         campo_act = lista_iter_ver_actual(l_iter);
     }
@@ -82,7 +82,9 @@ bool hash_redimensionar(hash_t* hash) {
     for (size_t i = 0; i < largo_ant; i++) {
         hash_campo_t* campo_reubicar = lista_borrar_primero(tabla_ant[i]);
         while(campo_reubicar) {
-            if (!hash_guardar(hash, campo_reubicar->clave, campo_reubicar->valor)) condicion = false;
+            if (!hash_guardar(hash, campo_reubicar->clave, campo_reubicar->valor)){
+                condicion = false;
+            }    
             free(campo_reubicar->clave);
             free(campo_reubicar);
             campo_reubicar = lista_borrar_primero(tabla_ant[i]);
@@ -249,8 +251,7 @@ const char *hash_iter_ver_actual(const hash_iter_t *iter){
 }
 
 bool hash_iter_al_final(const hash_iter_t *iter){
-    if (iter->actual) return false;
-    return true;
+    return (!iter->actual);
 }
 
 void hash_iter_destruir(hash_iter_t* iter) {
