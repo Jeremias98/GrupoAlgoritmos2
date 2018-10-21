@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LARGO_INI 20 //EJEMPLO
+#define LARGO_INI 100            //EJEMPLO
+#define FACTOR_REDIMENSION 3     //EJEMPLO
+#define MULTIP_REDIMENSION 2     //EJEMPLO
 
 typedef struct hash_campo {
     char *clave;
@@ -62,6 +64,35 @@ lista_iter_t* crear_y_posicionar_iterador(const hash_t* hash, const char* clave)
     return l_iter;    
 }
 
+bool hash_redimensionar(hash_t* hash) {
+    
+    lista_t** tabla_nueva = malloc(sizeof(lista_t*) * hash->largo * MULTIP_REDIMENSION);
+    if (!tabla_nueva) return false;
+
+    lista_t** tabla_ant = hash->tabla;
+    hash->tabla = tabla_nueva;
+    for (size_t i = 0; i < hash->largo * MULTIP_REDIMENSION; i++) {
+        hash->tabla[i] = lista_crear();
+    }
+    size_t largo_ant = hash->largo;
+    hash->largo *= MULTIP_REDIMENSION;
+    hash->cantidad = 0;
+    
+    bool condicion = true;
+    for (size_t i = 0; i < largo_ant; i++) {
+        hash_campo_t* campo_reubicar = lista_borrar_primero(tabla_ant[i]);
+        while(campo_reubicar) {
+            if (!hash_guardar(hash, campo_reubicar->clave, campo_reubicar->valor)) condicion = false;
+            free(campo_reubicar->clave);
+            free(campo_reubicar);
+            campo_reubicar = lista_borrar_primero(tabla_ant[i]);
+        }
+        lista_destruir(tabla_ant[i], NULL);
+    }    
+    free(tabla_ant);
+    return condicion;
+}
+
 /************************************************************************/
 
 hash_t* hash_crear(hash_destruir_dato_t destruir_dato) {
@@ -93,14 +124,17 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
     if(!campo_act) {
         char* clave_cpy = strdup(clave);
         if (!clave_cpy) return false;
-        if(!lista_iter_insertar(l_iter, hash_campo_crear(clave_cpy, dato))) {
+        if (!lista_iter_insertar(l_iter, hash_campo_crear(clave_cpy, dato))) {
             free(clave_cpy);
             return false;
         }
         hash->cantidad ++;
+        if (hash->cantidad / hash->largo == FACTOR_REDIMENSION) {
+            if (!hash_redimensionar(hash)) return false;
+        }
     }
     else {   
-        if(destruir_dato) destruir_dato(campo_act->valor);
+        if (destruir_dato) destruir_dato(campo_act->valor);
         campo_act->valor = dato;
     }
     lista_iter_destruir(l_iter);
