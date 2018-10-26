@@ -54,23 +54,23 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
 	
 }
 
-bool _abb_guardar(abb_t *arbol, abb_nodo_t* nodo, const char *clave, void *dato) {
+bool _abb_guardar(abb_t *arbol, abb_nodo_t* nodo, abb_nodo_t* padre, const char *clave, void *dato) {
 	
+	abb_comparar_clave_t cmp = arbol->cmp;
 	// Caso nuevo elemento
 	if (!nodo) {
 		
 		nodo = abb_nodo_crear(clave, dato);
 		if (!nodo) return false;
 		
-		if (!arbol->raiz) arbol->raiz = nodo;
-		
+		if (!padre) arbol->raiz = nodo;
+		else if (cmp(padre->clave, nodo->clave) < 0) padre->der = nodo;
+		else padre->izq = nodo;
 		arbol->cantidad++;
 				
 		return true;
 		
 	}
-	
-	abb_comparar_clave_t cmp = arbol->cmp;
 	
 	// Caso ya existente
 	if (cmp(nodo->clave, clave) == 0) {
@@ -84,8 +84,8 @@ bool _abb_guardar(abb_t *arbol, abb_nodo_t* nodo, const char *clave, void *dato)
 		return true;
 		
 	}
-	else if (cmp(nodo->clave, clave) > 0) return _abb_guardar(arbol, nodo->der, clave, dato);
-	else return _abb_guardar(arbol, nodo->izq, clave, dato);
+	else if (cmp(nodo->clave, clave) < 0) return _abb_guardar(arbol, nodo->der, nodo, clave, dato);
+	else return _abb_guardar(arbol, nodo->izq, nodo, clave, dato);
 	
 }
 
@@ -93,7 +93,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 	
 	if (!arbol) return false;
 	
-	return _abb_guardar(arbol, arbol->raiz, clave, dato);
+	return _abb_guardar(arbol, arbol->raiz, NULL, clave, dato);
 	
 }
 
@@ -102,7 +102,7 @@ bool _abb_pertenece(const abb_nodo_t *nodo, abb_comparar_clave_t cmp, const char
 	if (!nodo) return false;
 	
 	if (cmp(nodo->clave, clave) == 0) return true;
-	else if (cmp(nodo->clave, clave) > 0) return _abb_pertenece(nodo->der, cmp, clave);
+	else if (cmp(nodo->clave, clave) < 0) return _abb_pertenece(nodo->der, cmp, clave);
 	else return _abb_pertenece(nodo->izq, cmp, clave);
 	
 }
@@ -120,7 +120,7 @@ void* _abb_obtener(abb_nodo_t* nodo, abb_comparar_clave_t cmp, const char *clave
 	if (!nodo) return NULL;
 	
 	if (cmp(nodo->clave, clave) == 0) return nodo->dato;
-	else if (cmp(nodo->clave, clave) > 0) return _abb_obtener(nodo->der, cmp, clave);
+	else if (cmp(nodo->clave, clave) < 0) return _abb_obtener(nodo->der, cmp, clave);
 	else return _abb_obtener(nodo->izq, cmp, clave);
 	
 }
