@@ -54,6 +54,10 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
 	
 }
 
+bool hijo_der(abb_nodo_t* nodo, abb_nodo_t* padre, abb_comparar_clave_t cmp) {
+	return (cmp(padre->clave, nodo->clave) < 0);	
+}
+
 bool _abb_guardar(abb_t *arbol, abb_nodo_t* nodo, abb_nodo_t* padre, const char *clave, void *dato) {
 	
 	abb_comparar_clave_t cmp = arbol->cmp;
@@ -64,7 +68,7 @@ bool _abb_guardar(abb_t *arbol, abb_nodo_t* nodo, abb_nodo_t* padre, const char 
 		if (!nodo) return false;
 		
 		if (!padre) arbol->raiz = nodo;
-		else if (cmp(padre->clave, nodo->clave) < 0) padre->der = nodo;
+		else if(hijo_der(nodo, padre, cmp)) padre->der = nodo;
 		else padre->izq = nodo;
 		arbol->cantidad++;
 				
@@ -132,8 +136,57 @@ void *abb_obtener(const abb_t *arbol, const char *clave) {
 	return _abb_obtener(arbol->raiz, arbol->cmp, clave);
 }
 
+abb_nodo_t* buscar_nodo_y_padre(abb_nodo_t* nodo, abb_comparar_clave_t cmp,const char* clave, abb_nodo_t** padre, abb_nodo_t* _padre) {
+	
+	if (!nodo) return NULL;
+	
+	if (cmp(nodo->clave, clave) == 0) {
+		*padre = _padre;
+		return nodo;
+	}
+	else if (cmp(nodo->clave, clave) < 0) return buscar_nodo_y_padre(nodo->der, cmp, clave, padre, nodo);
+	else return buscar_nodo_y_padre(nodo->izq, cmp, clave, padre, nodo);
+}
+
+void actualizar_referencia(abb_t* arbol, abb_nodo_t* actual, abb_nodo_t* padre, abb_nodo_t* hijo) {
+	
+	if(!padre) arbol->raiz = hijo;
+	else if (hijo_der(actual, padre, arbol->cmp)) padre->der = hijo;
+	else padre->izq = hijo; 
+}
+
+abb_nodo_t* buscar_reemplazante(abb_nodo_t* nodo) {
+	
+	if(!nodo->izq) return nodo;
+	return buscar_reemplazante(nodo->izq);
+}
+
 void *abb_borrar(abb_t *arbol, const char *clave) {
-	return NULL;
+	
+	if(!arbol) return NULL;
+
+	abb_nodo_t* padre = NULL;
+	abb_nodo_t* nodo = buscar_nodo_y_padre(arbol->raiz, arbol->cmp, clave, &padre, NULL);
+
+	if (!nodo) return NULL;
+	
+	void* dato = nodo->dato;
+
+	if (!(nodo->izq && nodo->der)) {  // CASOS SIN HIJOS Y 1 HIJO
+		if(nodo->izq) actualizar_referencia(arbol, nodo, padre, nodo->izq);
+		else actualizar_referencia(arbol, nodo, padre, nodo->der);
+		free(nodo->clave);
+		free(nodo);
+		arbol->cantidad --;
+	}
+	else { // CASO DOS HIJOS
+		abb_nodo_t* reemplazante = buscar_reemplazante(nodo->der);
+		char* clave_r = strdup(reemplazante->clave);
+		nodo->dato = abb_borrar(arbol, clave_r);
+		free(nodo->clave);
+		nodo->clave = clave_r;
+	}
+	return dato;
 }
 
 size_t abb_cantidad(abb_t *arbol) {
