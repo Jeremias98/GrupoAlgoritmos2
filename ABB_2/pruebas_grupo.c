@@ -155,7 +155,7 @@ void test_reemplazar() {
 
 void test_iter_externo() {
 	
-	char* claves[] = {"1", "2", "3", "4", "5", "6", "7", NULL};
+	char* claves[] = {"10", "5", "20", "8", "15", "2", "22", NULL};
 	char* valores[] = {"1", "2", "3", "4", "5", "6", "7", NULL};
 	
 	abb_t* arbol = abb_crear(comparar_numeros, NULL);
