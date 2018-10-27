@@ -287,6 +287,13 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 
 // Iterador INORDER //
 
+void apilar_inorder(pila_t* pila, abb_nodo_t* raiz) {
+	while (raiz) {
+		pila_apilar(pila, raiz);
+		raiz = raiz->izq;
+	}
+}
+
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
 	
 	abb_iter_t* iter = malloc(sizeof(abb_iter_t));
@@ -295,13 +302,8 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
 	iter->pila = pila_crear();
 	if (!iter->pila) return NULL;
 	
-	// Apilo raiz
-	// y todos los hijos izquierdos
-	abb_nodo_t* nodo = arbol->raiz;
-	while (nodo) {
-		pila_apilar(iter->pila, nodo);
-		nodo = nodo->izq;
-	}
+	// Apilo raiz y todos los hijos izquierdos
+	apilar_inorder(iter->pila, arbol->raiz);
 	
 	return iter;
 	
@@ -315,11 +317,7 @@ bool abb_iter_in_avanzar(abb_iter_t *iter) {
 	
 	// Apilo hijo derecho del desapilado
 	// y todos los hijos izquierdos
-	abb_nodo_t* nodo = desapilado->der;
-	while (nodo) {
-		pila_apilar(iter->pila, nodo);
-		nodo = nodo->izq;
-	}
+	apilar_inorder(iter->pila, desapilado->der);
 	
 	return true;
 	
