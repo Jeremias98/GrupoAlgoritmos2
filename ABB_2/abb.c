@@ -270,7 +270,6 @@ void _abb_in_order(abb_nodo_t *nodo, bool visitar(const char *, void *, void *),
 	
 	_abb_in_order(nodo->izq, visitar, extra);
 	
-	printf("%s\n", nodo->clave);
 	if (visitar) visitar(nodo->clave, nodo->dato, extra);
 	
 	_abb_in_order(nodo->der, visitar, extra);

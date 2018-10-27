@@ -13,8 +13,16 @@ int comparar_numeros(const char* str1, const char* str2) {
 	
 }
 
+bool imprimir(const char* clave, void* dato, void* extra) {
+	printf("%s\n", clave);
+	return true;
+}
+
 void test_crear_1() {
 	
+	printf("\n");
+	printf("INICIO PRUEBAS ARBOL 6 ELEMENTOS\n\n");
+
 	abb_t* arbol = abb_crear(comparar_numeros, NULL);
 	
 	char* clave_1 = "14";
@@ -43,27 +51,41 @@ void test_crear_1() {
 	
 	print_test("Guardar elemento 2", abb_guardar(arbol, clave_2, dato_2));
 	print_test("Obtener elemento 2", abb_obtener(arbol, clave_2) == dato_2);
-	print_test("Cantidad es 2", abb_cantidad(arbol) == 2);	
-	print_test("Pertenece elemento 1", abb_pertenece(arbol, clave_1) == true);
-	print_test("Pertenece elemento 2", abb_pertenece(arbol, clave_2) == true);
+	print_test("Cantidad es 2", abb_cantidad(arbol) == 2);
+
 	print_test("Guardar elemento 3", abb_guardar(arbol, clave_3, dato_3));
 	print_test("Guardar elemento 4", abb_guardar(arbol, clave_4, dato_4));
 	print_test("Guardar elemento 5", abb_guardar(arbol, clave_5, dato_5));
 	print_test("Guardar elemento 6", abb_guardar(arbol, clave_6, dato_6));	
+	print_test("Obtener elemento 3", abb_obtener(arbol, clave_3) == dato_3);
+	print_test("Obtener elemento 4", abb_obtener(arbol, clave_4) == dato_4);
+	print_test("Obtener elemento 5", abb_obtener(arbol, clave_5) == dato_5);
+	print_test("Obtener elemento 6", abb_obtener(arbol, clave_6) == dato_6);				
+	print_test("Pertenece elemento 1", abb_pertenece(arbol, clave_1) == true);
+	print_test("Pertenece elemento 2", abb_pertenece(arbol, clave_2) == true);
 	print_test("Pertenece elemento 3", abb_pertenece(arbol, clave_3) == true);
 	print_test("Pertenece elemento 4", abb_pertenece(arbol, clave_4) == true);
 	print_test("Pertenece elemento 5", abb_pertenece(arbol, clave_5) == true);			
 	print_test("Pertenece elemento 6", abb_pertenece(arbol, clave_6) == true);
+	
 	print_test("Cantidad es 6", abb_cantidad(arbol) == 6);
 	printf("Inorder: \n");
-	abb_in_order(arbol, NULL, NULL);
+	abb_in_order(arbol, imprimir, NULL);
 	print_test("Borrar elemento 1 - '14'(raiz)", abb_borrar(arbol, clave_1) == dato_1);
 	printf("Inorder: \n");
-	abb_in_order(arbol, NULL, NULL);		
+	abb_in_order(arbol, imprimir, NULL);
+	print_test("Obtener elemento 2", abb_obtener(arbol, clave_2) == dato_2);	
+	print_test("Obtener elemento 3", abb_obtener(arbol, clave_3) == dato_3);
+	print_test("Obtener elemento 4", abb_obtener(arbol, clave_4) == dato_4);
+	print_test("Obtener elemento 5", abb_obtener(arbol, clave_5) == dato_5);
+	print_test("Obtener elemento 6", abb_obtener(arbol, clave_6) == dato_6);		
 	print_test("Borrar elemento 2 - '9'", abb_borrar(arbol, clave_2) == dato_2);	
 	print_test("Borrar elemento 3 - '5'", abb_borrar(arbol, clave_3) == dato_3);
 	printf("Inorder: \n");
-	abb_in_order(arbol, NULL, NULL);	
+	abb_in_order(arbol, imprimir, NULL);
+	print_test("Obtener elemento 4", abb_obtener(arbol, clave_4) == dato_4);
+	print_test("Obtener elemento 5", abb_obtener(arbol, clave_5) == dato_5);
+	print_test("Obtener elemento 6", abb_obtener(arbol, clave_6) == dato_6);		
 	print_test("Borrar elemento 4 - '21'", abb_borrar(arbol, clave_4) == dato_4);//PROBAR EN DIFERENTE ORDEN
 	print_test("Borrar elemento 5 - '15'", abb_borrar(arbol, clave_5) == dato_5);
 	print_test("Borrar elemento 6 - '11'", abb_borrar(arbol, clave_6) == dato_6);
@@ -81,6 +103,9 @@ void test_crear_1() {
 
 void test_crear_2() {
 	
+	printf("\n");
+	printf("INICIO PRUEBAS ARBOL 3 ELEMENTOS\n\n");
+
 	abb_t* arbol = abb_crear(comparar_numeros, NULL);
 	
 	char* clave_1 = "14";
@@ -112,13 +137,13 @@ void test_crear_2() {
 	print_test("Pertenece 3", abb_pertenece(arbol, clave_3));
 	
 	printf("Inorder: \n");
-	abb_in_order(arbol, NULL, NULL);	
+	abb_in_order(arbol, imprimir, NULL);	
 	
 	print_test("Borrar 1 (raiz)", abb_borrar(arbol, clave_1) == dato_1);
 	print_test("Cantidad es 2", abb_cantidad(arbol) == 2);
 	
 	printf("Inorder: \n");
-	abb_in_order(arbol, NULL, NULL);	
+	abb_in_order(arbol, imprimir, NULL);	
 	
 	print_test("Obtener elemento 2", abb_obtener(arbol, clave_2) == dato_2);
 	
@@ -126,7 +151,7 @@ void test_crear_2() {
 	print_test("Cantidad es 1", abb_cantidad(arbol) == 1);
 	
 	printf("Inorder: \n");
-	abb_in_order(arbol, NULL, NULL);
+	abb_in_order(arbol, imprimir, NULL);
 	
 	print_test("Borrar 3", abb_borrar(arbol, clave_3) == dato_3);
 	print_test("Cantidad es 0", abb_cantidad(arbol) == 0);
@@ -136,9 +161,13 @@ void test_crear_2() {
 	
 }
 
-void test_reemplazar() {
+void test_iter_interno() {
 	
-	char* claves[] = {"1", "2", "3", "4", "5", "6", "7", NULL};
+	printf("\n");
+	printf("INICIO PRUEBAS ARBOL ITER INTERNO\n");
+	printf("Agrego 7 elementos - Uso funcion imprimir\n\n");
+
+	char* claves[] = {"10", "5", "20", "8", "15", "2", "22", NULL};
 	char* valores[] = {"1", "2", "3", "4", "5", "6", "7", NULL};
 	
 	abb_t* arbol = abb_crear(comparar_numeros, NULL);
@@ -147,7 +176,7 @@ void test_reemplazar() {
 		abb_guardar(arbol, claves[i], valores[i]);
 	}
 	
-	//abb_in_order(arbol, NULL, NULL);
+	abb_in_order(arbol, imprimir, NULL);
 	
 	abb_destruir(arbol);
 	
@@ -155,6 +184,10 @@ void test_reemplazar() {
 
 void test_iter_externo() {
 	
+	printf("\n");
+	printf("INICIO PRUEBAS ARBOL ITER EXTERNO\n");
+	printf("Agrego 7 elementos - Itero hasta el final\n\n");
+
 	char* claves[] = {"10", "5", "20", "8", "15", "2", "22", NULL};
 	char* valores[] = {"1", "2", "3", "4", "5", "6", "7", NULL};
 	
@@ -182,6 +215,6 @@ void test_iter_externo() {
 void pruebas_abb_alumno() {
 	test_crear_1();
 	test_crear_2();
-	test_reemplazar();
+	test_iter_interno();
 	test_iter_externo();
 }
