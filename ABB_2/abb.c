@@ -74,7 +74,7 @@ abb_nodo_t* abb_insertar(abb_t *arbol, abb_nodo_t* nodo, const char *clave, void
 	if (arbol->cmp(nodo->clave, clave) == 0) {
 		nodo = abb_insertar(arbol, NULL, clave, dato);
 	}
-	else if (arbol->cmp(nodo->clave, clave) > 0) { 
+	else if (arbol->cmp(nodo->clave, clave) < 0) { 
 		nodo->der = abb_insertar(arbol, nodo->der, clave, dato);
 	}
 	else { 
@@ -118,7 +118,7 @@ abb_nodo_t* abb_obtener_padre(abb_nodo_t* nodo, abb_comparar_clave_t cmp, const 
 	else if (nodo->der && cmp(nodo->der->clave, clave) == 0) {
 		return nodo;
 	}
-	else if (cmp(nodo->clave, clave) > 0) return abb_obtener_padre(nodo->der, cmp, clave);
+	else if (cmp(nodo->clave, clave) < 0) return abb_obtener_padre(nodo->der, cmp, clave);
 	else return abb_obtener_padre(nodo->izq, cmp, clave);
 	
 }
@@ -151,8 +151,8 @@ abb_nodo_t* _abb_obtener(abb_nodo_t* nodo, abb_comparar_clave_t cmp, const char 
 	
 	if (!nodo) return NULL;
 	
-	if (cmp(nodo->clave, clave) > 0) return _abb_obtener(nodo->der, cmp, clave);
-	else if (cmp(nodo->clave, clave) < 0) return _abb_obtener(nodo->izq, cmp, clave);
+	if (cmp(nodo->clave, clave) < 0) return _abb_obtener(nodo->der, cmp, clave);
+	else if (cmp(nodo->clave, clave) > 0) return _abb_obtener(nodo->izq, cmp, clave);
 	else return nodo;
 	
 }
@@ -173,10 +173,10 @@ abb_nodo_t* _abb_borrar(abb_t* arbol, abb_nodo_t *nodo, const char *clave) {
 	
 	if (!nodo) return NULL;
 	
-	if (arbol->cmp(nodo->clave, clave) < 0) {
+	if (arbol->cmp(nodo->clave, clave) > 0) {
 		nodo->izq = _abb_borrar(arbol, nodo->izq, clave);
 	}
-	else if (arbol->cmp(nodo->clave, clave) > 0) {
+	else if (arbol->cmp(nodo->clave, clave) < 0) {
 		nodo->der = _abb_borrar(arbol, nodo->der, clave);
 	}
 	else {

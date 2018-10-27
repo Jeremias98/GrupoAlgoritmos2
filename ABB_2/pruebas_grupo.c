@@ -7,15 +7,15 @@
 
 int comparar_numeros(const char* str1, const char* str2) {
 	
-	if (atoi(str1) > atoi(str2)) return -1;
-	else if (atoi(str1) < atoi(str2)) return 1;
+	if (atoi(str1) > atoi(str2)) return 1;
+	else if (atoi(str1) < atoi(str2)) return -1;
 	else return 0;
 	
 }
 
 void test_crear_1() {
 	
-	abb_t* arbol = abb_crear(strcmp, NULL);
+	abb_t* arbol = abb_crear(comparar_numeros, NULL);
 	
 	char* clave_1 = "14";
 	char* dato_1 = "Perro";
@@ -55,12 +55,18 @@ void test_crear_1() {
 	print_test("Pertenece elemento 5", abb_pertenece(arbol, clave_5) == true);			
 	print_test("Pertenece elemento 6", abb_pertenece(arbol, clave_6) == true);
 	print_test("Cantidad es 6", abb_cantidad(arbol) == 6);
-	print_test("Borrar elemento 1 (raiz)", abb_borrar(arbol, clave_1) == dato_1);	
-	print_test("Borrar elemento 2", abb_borrar(arbol, clave_2) == dato_2);
-	print_test("Borrar elemento 3", abb_borrar(arbol, clave_3) == dato_3);
-	print_test("Borrar elemento 4", abb_borrar(arbol, clave_4) == dato_4);//PROBAR EN DIFERENTE ORDEN
-	print_test("Borrar elemento 5", abb_borrar(arbol, clave_5) == dato_5);
-	print_test("Borrar elemento 6", abb_borrar(arbol, clave_6) == dato_6);
+	printf("Inorder: \n");
+	abb_in_order(arbol, NULL, NULL);
+	print_test("Borrar elemento 1 - '14'(raiz)", abb_borrar(arbol, clave_1) == dato_1);
+	printf("Inorder: \n");
+	abb_in_order(arbol, NULL, NULL);		
+	print_test("Borrar elemento 2 - '9'", abb_borrar(arbol, clave_2) == dato_2);	
+	print_test("Borrar elemento 3 - '5'", abb_borrar(arbol, clave_3) == dato_3);
+	printf("Inorder: \n");
+	abb_in_order(arbol, NULL, NULL);	
+	print_test("Borrar elemento 4 - '21'", abb_borrar(arbol, clave_4) == dato_4);//PROBAR EN DIFERENTE ORDEN
+	print_test("Borrar elemento 5 - '15'", abb_borrar(arbol, clave_5) == dato_5);
+	print_test("Borrar elemento 6 - '11'", abb_borrar(arbol, clave_6) == dato_6);
 	print_test("Cantidad es 0", abb_cantidad(arbol) == 0);
 	print_test("No pertenece elemento 1", abb_pertenece(arbol, clave_1) == false);
 	print_test("No pertenece elemento 2", abb_pertenece(arbol, clave_2) == false);
@@ -75,7 +81,7 @@ void test_crear_1() {
 
 void test_crear_2() {
 	
-	abb_t* arbol = abb_crear(strcmp, NULL);
+	abb_t* arbol = abb_crear(comparar_numeros, NULL);
 	
 	char* clave_1 = "14";
 	char* dato_1 = "Perro";
