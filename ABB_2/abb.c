@@ -73,7 +73,7 @@ abb_nodo_t* abb_insertar(abb_t *arbol, abb_nodo_t* nodo, const char *clave, void
 	}
 	
 	if (arbol->cmp(nodo->clave, clave) == 0) {
-		nodo = abb_insertar(arbol, NULL, clave, dato);
+		nodo->dato = dato;
 	}
 	else if (arbol->cmp(nodo->clave, clave) < 0) { 
 		nodo->der = abb_insertar(arbol, nodo->der, clave, dato);
@@ -97,33 +97,6 @@ abb_nodo_t* get_reemplazante(abb_nodo_t* nodo) {
 	return actual;
 	
 }
-
-
-size_t get_cantidad_hijos(abb_nodo_t* nodo) {
-	
-	size_t hijos = 0;
-	
-	if (nodo->der) hijos++;
-	if (nodo->izq) hijos++;
-	
-	return hijos;
-}
-
-abb_nodo_t* abb_obtener_padre(abb_nodo_t* nodo, abb_comparar_clave_t cmp, const char *clave) {
-	
-	if (!nodo) return NULL;
-	
-	if (nodo->izq && cmp(nodo->izq->clave, clave) == 0) {
-		return nodo;
-	}
-	else if (nodo->der && cmp(nodo->der->clave, clave) == 0) {
-		return nodo;
-	}
-	else if (cmp(nodo->clave, clave) < 0) return abb_obtener_padre(nodo->der, cmp, clave);
-	else return abb_obtener_padre(nodo->izq, cmp, clave);
-	
-}
-
 
 // #### PRIMITIVAS #### //
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
