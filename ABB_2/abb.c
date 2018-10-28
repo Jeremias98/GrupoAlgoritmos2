@@ -4,6 +4,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct abb_nodo {
 	struct abb_nodo* izq;
