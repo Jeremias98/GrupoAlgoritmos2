@@ -68,11 +68,13 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
 abb_nodo_t* abb_insertar(abb_t *arbol, abb_nodo_t* nodo, const char *clave, void *dato) {
 	
 	if (!nodo) {
-		arbol->cantidad++;
+		if (dato) arbol->cantidad++;
 		return abb_nodo_crear(clave, dato);
 	}
 	
 	if (arbol->cmp(nodo->clave, clave) == 0) {
+		if (!dato && nodo->dato) arbol->cantidad --;
+		if (dato && !nodo->dato) arbol->cantidad ++;
 		nodo->dato = dato;
 	}
 	else if (arbol->cmp(nodo->clave, clave) < 0) { 
@@ -83,6 +85,16 @@ abb_nodo_t* abb_insertar(abb_t *arbol, abb_nodo_t* nodo, const char *clave, void
 	}
 	
 	return nodo;
+	
+}
+
+abb_nodo_t* _abb_obtener(abb_nodo_t* nodo, abb_comparar_clave_t cmp, const char *clave) {
+	
+	if (!nodo) return NULL;
+	
+	if (cmp(nodo->clave, clave) < 0) return _abb_obtener(nodo->der, cmp, clave);
+	else if (cmp(nodo->clave, clave) > 0) return _abb_obtener(nodo->izq, cmp, clave);
+	else return nodo;
 	
 }
 
@@ -102,10 +114,10 @@ abb_nodo_t* get_reemplazante(abb_nodo_t* nodo) {
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 	
 	if (!arbol) return false;
-	
+
 	if (!arbol->raiz) {
 		arbol->raiz = abb_nodo_crear(clave, dato);
-		arbol->cantidad++;
+		if (dato) arbol->cantidad++;
 		return true;
 	}
 	
@@ -117,19 +129,10 @@ bool abb_pertenece(const abb_t *arbol, const char *clave) {
 	
 	if (!arbol) return false;
 	
-	return abb_obtener(arbol, clave) ? true : false;
+	return _abb_obtener(arbol->raiz, arbol->cmp, clave) ? true : false;
 	
 }
 
-abb_nodo_t* _abb_obtener(abb_nodo_t* nodo, abb_comparar_clave_t cmp, const char *clave) {
-	
-	if (!nodo) return NULL;
-	
-	if (cmp(nodo->clave, clave) < 0) return _abb_obtener(nodo->der, cmp, clave);
-	else if (cmp(nodo->clave, clave) > 0) return _abb_obtener(nodo->izq, cmp, clave);
-	else return nodo;
-	
-}
 
 void *abb_obtener(const abb_t *arbol, const char *clave) {
 	
@@ -298,6 +301,7 @@ bool abb_iter_in_avanzar(abb_iter_t *iter) {
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter) {
 	abb_nodo_t* actual = pila_ver_tope(iter->pila);
+	if (!actual) return NULL;
 	return actual->clave;
 }
 
