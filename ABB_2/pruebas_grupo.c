@@ -18,6 +18,31 @@ bool imprimir(const char* clave, void* dato, void* extra) {
 	return true;
 }
 
+bool corte_simple(const char *clave, void *dato, void *extra) {
+	if (comparar_numeros(clave, "5") == 0) return false;
+	else  {
+		printf("%s\n", clave);
+		return true;
+	}
+}
+
+bool solo_derecha(const char *clave, void *dato, void *extra) {
+	if (comparar_numeros(clave, "10") < 0) return false;
+	else  {
+		printf("%s\n", clave);
+		return true;
+	}
+}
+
+bool solo_izquierda(const char *clave, void *dato, void *extra) {
+	if (comparar_numeros(clave, "10") > 0) return false;
+	else  {
+		printf("%s\n", clave);
+		return true;
+	}
+}
+
+
 void test_crear_1() {
 	
 	printf("\n");
@@ -176,7 +201,17 @@ void test_iter_interno() {
 		abb_guardar(arbol, claves[i], valores[i]);
 	}
 	
+	printf("Imprimo todos\n");
 	abb_in_order(arbol, imprimir, NULL);
+	
+	printf("Imprimo con corte\n");
+	abb_in_order(arbol, corte_simple, NULL);
+	
+	printf("Imprimo solo la rama der\n");
+	abb_in_order(arbol, solo_derecha, NULL);
+	
+	printf("Imprimo solo la rama izq\n");
+	abb_in_order(arbol, solo_izquierda, NULL);
 	
 	abb_destruir(arbol);
 	
@@ -197,6 +232,8 @@ void test_iter_externo() {
 		abb_guardar(arbol, claves[i], valores[i]);
 	}
 	
+	abb_in_order(arbol, NULL, NULL);
+	
 	abb_iter_t* iter = abb_iter_in_crear(arbol);
 	
 	while (!abb_iter_in_al_final(iter)) {
@@ -211,10 +248,34 @@ void test_iter_externo() {
 	abb_destruir(arbol);
 }
 
+void test_nulls() {
+	
+	printf("\nINICIO PRUEBAS ARBOL NULLS\n");
+	
+	abb_t* arbol = abb_crear(comparar_numeros, NULL);
+	
+	char* clave_1 = "";
+	char* dato_1 = NULL;
+	
+	print_test("Cantidad es 0", abb_cantidad(arbol) == 0);
+	
+	print_test("Guardar elemento clave vacia y dato NULL en raiz (tiene que poder)", abb_guardar(arbol, clave_1, dato_1));
+	
+	print_test("Cantidad es 1", abb_cantidad(arbol) == 1);
+	
+	print_test("Borrar clave vacia", abb_borrar(arbol, clave_1) == NULL);
+	
+	print_test("Cantidad es 0", abb_cantidad(arbol) == 0);
+	
+	abb_destruir(arbol);
+	
+}
+
 
 void pruebas_abb_alumno() {
 	test_crear_1();
 	test_crear_2();
 	test_iter_interno();
 	test_iter_externo();
+	test_nulls();
 }
