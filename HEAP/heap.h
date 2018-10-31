@@ -8,7 +8,7 @@
  * diversas funciones del heap.
  * Debe recibir dos punteros del tipo de dato utilizado en el heap, y
  * debe devolver:
- *   menor a 0  si  a < b
+
  *       0      si  a == b
  *   mayor a 0  si  a > b
  */
@@ -86,4 +86,3 @@ void *heap_desencolar(heap_t *heap);
 void pruebas_heap_alumno(void);
 
 #endif // HEAP_H
-

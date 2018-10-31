@@ -12,6 +12,24 @@ typedef struct heap {
     cmp_func_t cmp;
 } heap_t;
 
+size_t get_index_padre(size_t posicion) {
+    return posicion == 0 ? -1 : (posicion - 1) / 2;
+}
+
+size_t get_index_der(size_t posicion) {
+    return 2 * posicion + 2;
+}
+
+size_t get_index_izq(size_t posicion) {
+    return 2 * posicion + 1;
+}
+
+void swap(void* valor_1, void* valor_2) {
+    void* aux = valor_1;
+    valor_1 = valor_2;
+    valor_2 = aux;
+}
+
 bool heap_redimensionar(heap_t* heap, const double factor) {
 
     size_t capacidad_nueva = (size_t)((double)heap->capacidad * factor);
@@ -29,6 +47,26 @@ bool heap_redimensionar(heap_t* heap, const double factor) {
 
 }
 
+void upheap(heap_t* heap, size_t index_hijo) {
+
+    size_t index_padre = get_index_padre(index_hijo);
+
+    // Caso en el padre
+    if (index_padre == -1) return;
+
+    void* padre = heap->arr[index_padre];
+    void* hijo = heap->arr[index_hijo];
+
+    if (heap->cmp(padre, hijo) >= 0) return;
+
+    swap(padre, hijo);
+
+    upheap(heap, index_padre);
+
+    return;
+
+}
+
 heap_t *heap_crear(cmp_func_t cmp) {
 
     heap_t* heap = malloc(sizeof(heap_t));
@@ -43,22 +81,34 @@ heap_t *heap_crear(cmp_func_t cmp) {
 
 }
 
+size_t heap_cantidad(const heap_t *heap) {
+    return heap->tam;
+}
+
+bool heap_esta_vacio(const heap_t *heap) {
+    return heap->tam == 0;
+}
+
+bool heap_encolar(heap_t *heap, void *elem) {
+
+    if (!elem) return false;
+
+    if (heap->tam == heap->capacidad) {
+        if (!heap_redimensionar(heap, FACTOR_AGRANDAR)) return false;
+    }
+
+    heap->arr[heap->tam] = elem;
+    heap->tam++;
+
+    upheap(heap, heap->tam - 1);
+
+    return true;
+}
+
 void heap_destruir(heap_t *heap, void destruir_elemento(void *e)) {
 
-    size_t index = 0;
-
-    void* dato = heap->tam > 0 ? heap->arr[index] : NULL;
-
-    while(dato) {
-
-        if (destruir_elemento) {
-            destruir_elemento(dato);
-        }
-
-        index++;
-
-        dato = heap->arr[index];
-
+    for (size_t i = 0; i < heap->tam && destruir_elemento; i++) {
+        destruir_elemento(heap->arr[i]);
     }
 
     free(heap->arr);
