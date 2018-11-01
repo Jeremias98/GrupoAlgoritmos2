@@ -12,8 +12,8 @@ int comparar_numeros(const void* str1, const void* str2) {
 
 }
 
-void test_insertar() {
-	printf("\n####### TEST INSERTAR #######\n");
+void test_encolar() {
+	printf("\n####### TEST ENCOLAR #######\n");
 
 	heap_t* heap = heap_crear(comparar_numeros);
 
@@ -54,6 +54,7 @@ void test_insertar() {
 	heap_destruir(heap, NULL);
 }
 
+
 void pruebas_heap_alumno(void) {
-	test_insertar();
+	test_encolar();
 }
