@@ -1,5 +1,7 @@
 #include "heap.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #define CAPACIDAD_INICIAL 10
 #define FACTOR_AGRANDAR 2
@@ -24,10 +26,19 @@ size_t get_index_izq(size_t posicion) {
     return 2 * posicion + 1;
 }
 
+/*
 void swap(void* valor_1, void* valor_2) {
+    printf("%s\n", "Swap");
     void* aux = valor_1;
     valor_1 = valor_2;
     valor_2 = aux;
+}*/
+
+void swap(void **p, void **q)
+{
+    void *t = *p;
+    *p = *q;
+    *q = t;
 }
 
 bool heap_redimensionar(heap_t* heap, const double factor) {
@@ -54,12 +65,9 @@ void upheap(heap_t* heap, size_t index_hijo) {
     // Caso en el padre
     if (index_padre == -1) return;
 
-    void* padre = heap->arr[index_padre];
-    void* hijo = heap->arr[index_hijo];
+    if (heap->cmp(heap->arr[index_padre], heap->arr[index_hijo]) >= 0) return;
 
-    if (heap->cmp(padre, hijo) >= 0) return;
-
-    swap(padre, hijo);
+    swap(&heap->arr[index_padre], &heap->arr[index_hijo]);
 
     upheap(heap, index_padre);
 
@@ -79,6 +87,11 @@ heap_t *heap_crear(cmp_func_t cmp) {
 
     return heap;
 
+}
+
+void *heap_ver_max(const heap_t *heap) {
+    if (heap_esta_vacio(heap)) return NULL;
+    return heap->arr[0];
 }
 
 size_t heap_cantidad(const heap_t *heap) {
@@ -103,6 +116,11 @@ bool heap_encolar(heap_t *heap, void *elem) {
     upheap(heap, heap->tam - 1);
 
     return true;
+}
+
+void *heap_desencolar(heap_t *heap) {
+    return NULL;
+
 }
 
 void heap_destruir(heap_t *heap, void destruir_elemento(void *e)) {
