@@ -82,6 +82,7 @@ void *heap_ver_max(const heap_t *heap);
  */
 void *heap_desencolar(heap_t *heap);
 
+void heapify(void* elementos[], size_t cant, cmp_func_t cmp); //PROVISORIO(para que compile el test_heapify)
 
 void pruebas_heap_alumno(void);
 
