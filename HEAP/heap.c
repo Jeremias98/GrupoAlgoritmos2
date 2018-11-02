@@ -58,47 +58,55 @@ bool heap_redimensionar(heap_t* heap, const double factor) {
 
 }
 
-void upheap(heap_t* heap, size_t index_hijo) {
+void upheap(void* arr[], cmp_func_t cmp, size_t index_hijo) {
 
     size_t index_padre = get_index_padre(index_hijo);
 
     // Caso en el padre
     if (index_padre == -1) return;
-    if (heap->cmp(heap->arr[index_padre], heap->arr[index_hijo]) >= 0) return;
+    if (cmp(arr[index_padre], arr[index_hijo]) >= 0) return;
 
-    swap(&heap->arr[index_padre], &heap->arr[index_hijo]);
+    swap(&arr[index_padre], &arr[index_hijo]);
 
-    upheap(heap, index_padre);
+    upheap(arr, cmp, index_padre);
 
     return;
 
 }
 
-void downheap(heap_t* heap, size_t index_padre) {
+void downheap(void* arr[], size_t tam, cmp_func_t cmp, size_t index_padre) {
 
     size_t i_hijo_der = get_index_der(index_padre);
     size_t i_hijo_izq = get_index_izq(index_padre);
 
     // Caso sin hijos
-    if (i_hijo_der >= heap->tam && i_hijo_izq >= heap->tam) return;
+    if (i_hijo_der >= tam && i_hijo_izq >= tam) return;
 
     size_t index_hijo = -1;
 
-    if (i_hijo_der < heap->tam && i_hijo_izq < heap->tam)
-        index_hijo = heap->cmp(heap->arr[i_hijo_der], heap->arr[i_hijo_izq]) < 0 ? i_hijo_izq : i_hijo_der;
+    if (i_hijo_der < tam && i_hijo_izq < tam)
+        index_hijo = cmp(arr[i_hijo_der], arr[i_hijo_izq]) < 0 ? i_hijo_izq : i_hijo_der;
     else
-        index_hijo = i_hijo_izq < heap->tam ? i_hijo_izq : i_hijo_der;
+        index_hijo = i_hijo_izq < tam ? i_hijo_izq : i_hijo_der;
 
     // Caso que el hijo mayor no sea mayor que el padre
-    if (heap->cmp(heap->arr[index_padre], heap->arr[index_hijo]) > 0) return;
+    if (cmp(arr[index_padre], arr[index_hijo]) > 0) return;
 
-    swap(&heap->arr[index_padre], &heap->arr[index_hijo]);
+    swap(&arr[index_padre], &arr[index_hijo]);
 
-    downheap(heap, index_hijo);
+    downheap(arr, tam, cmp, index_hijo);
 
     return;
 
 }
+
+void heapify(void* elementos[], size_t cant, cmp_func_t cmp) {
+
+    if(!elementos || cant<= 0 || !cmp) return;
+
+    for(size_t i = cant-1; i >= 0; i --) downheap(elementos, cant, cmp, i);
+}
+
 
 heap_t *heap_crear(cmp_func_t cmp) {
 
@@ -158,7 +166,7 @@ bool heap_encolar(heap_t *heap, void *elem) {
     heap->arr[heap->tam] = elem;
     heap->tam++;
 
-    upheap(heap, heap->tam - 1);
+    upheap(heap->arr, heap->cmp, heap->tam - 1);
 
     return true;
 }
@@ -178,7 +186,7 @@ void *heap_desencolar(heap_t *heap) {
 
     heap->tam--;
 
-    downheap(heap, 0);
+    downheap(heap->arr, heap->tam, heap->cmp, 0);
 
     return elemento_quitado;
 
@@ -194,3 +202,4 @@ void heap_destruir(heap_t *heap, void destruir_elemento(void *e)) {
     free(heap);
 
 }
+
