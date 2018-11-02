@@ -79,17 +79,17 @@ void downheap(heap_t* heap, size_t index_padre) {
     size_t i_hijo_der = get_index_der(index_padre);
     size_t i_hijo_izq = get_index_izq(index_padre);
 
+    // Caso sin hijos
     if (i_hijo_der >= heap->tam && i_hijo_izq >= heap->tam) return;
 
-    // Me quedo con el mayor de los hijos
-
-    size_t index_hijo = 0;
+    size_t index_hijo = -1;
 
     if (i_hijo_der < heap->tam && i_hijo_izq < heap->tam)
         index_hijo = heap->cmp(heap->arr[i_hijo_der], heap->arr[i_hijo_izq]) < 0 ? i_hijo_izq : i_hijo_der;
     else
         index_hijo = i_hijo_izq < heap->tam ? i_hijo_izq : i_hijo_der;
 
+    // Caso que el hijo mayor no sea mayor que el padre
     if (heap->cmp(heap->arr[index_padre], heap->arr[index_hijo]) > 0) return;
 
     swap(&heap->arr[index_padre], &heap->arr[index_hijo]);
@@ -102,6 +102,8 @@ void downheap(heap_t* heap, size_t index_padre) {
 
 heap_t *heap_crear(cmp_func_t cmp) {
 
+    if (!cmp) return NULL;
+
     heap_t* heap = malloc(sizeof(heap_t));
     if (!heap) return NULL;
 
@@ -109,6 +111,24 @@ heap_t *heap_crear(cmp_func_t cmp) {
     heap->tam = 0;
     heap->capacidad = CAPACIDAD_INICIAL;
     heap->cmp = cmp;
+
+    return heap;
+
+}
+
+heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
+
+    if (!arreglo || n <= 0 || !cmp) return NULL;
+
+    heap_t* heap = heap_crear(cmp);
+    if (!heap) return NULL;
+
+    bool encolo_ok = true;
+    for (size_t i = 0; i < n && encolo_ok; i++) {
+        encolo_ok = heap_encolar(heap, arreglo[i]);
+    }
+
+    if (!encolo_ok) return NULL;
 
     return heap;
 

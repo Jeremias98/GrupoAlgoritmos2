@@ -66,25 +66,32 @@ void test_desencolar() {
 		encolo_ok = heap_encolar(heap, &arreglo[i]);
 	}
 	print_test("Encolar 6 elementos (9,5,12,11,10,2)", encolo_ok);
+	print_test("Cantidad es 6", heap_cantidad(heap) == 6);
 	print_test("Ver max es 12", heap_ver_max(heap) == &arreglo[2]);
 
 	print_test("Desencolar es 12", heap_desencolar(heap) == &arreglo[2]);
+	print_test("Cantidad es 5", heap_cantidad(heap) == 5);
 	print_test("Ver max es 11", heap_ver_max(heap) == &arreglo[3]);
 
 	print_test("Desencolar es 11", heap_desencolar(heap) == &arreglo[3]);
+	print_test("Cantidad es 4", heap_cantidad(heap) == 4);
 	print_test("Ver max es 10", heap_ver_max(heap) == &arreglo[4]);
 
 	print_test("Desencolar es 10", heap_desencolar(heap) == &arreglo[4]);
+	print_test("Cantidad es 3", heap_cantidad(heap) == 3);
 	//printf("Max %d\n", *((int*)(heap_ver_max(heap))));
 	print_test("Ver max es 9", heap_ver_max(heap) == &arreglo[0]);
 
 	print_test("Desencolar es 9", heap_desencolar(heap) == &arreglo[0]);
+	print_test("Cantidad es 2", heap_cantidad(heap) == 2);
 	print_test("Ver max es 5", heap_ver_max(heap) == &arreglo[1]);
 
 	print_test("Desencolar es 5", heap_desencolar(heap) == &arreglo[1]);
+	print_test("Cantidad es 1", heap_cantidad(heap) == 1);
 	print_test("Ver max es 2", heap_ver_max(heap) == &arreglo[5]);
 
 	print_test("Desencolar es 2", heap_desencolar(heap) == &arreglo[5]);
+	print_test("Cantidad es 0", heap_cantidad(heap) == 0);
 	print_test("Ver max es NULL", heap_ver_max(heap) == NULL);
 
 	print_test("Desencolar es NULL", heap_desencolar(heap) == NULL);
@@ -92,7 +99,24 @@ void test_desencolar() {
 	heap_destruir(heap, NULL);
 }
 
+void test_crear_arreglo() {
+	// No implementado heap_crear_arr!
+	size_t n = 6;
+	int** arreglo = malloc(n*sizeof(int*));
+	for (int i = 0; i < n; i++) {
+		arreglo[i] = &i;
+	}
+
+	heap_t* heap = heap_crear_arr((void**)arreglo, n, comparar_numeros);
+
+	print_test("Ver max es 6", heap_ver_max(heap) == &arreglo[5]);
+
+	heap_destruir(heap, NULL);
+	free(arreglo);
+}
+
 void pruebas_heap_alumno(void) {
 	test_encolar();
 	test_desencolar();
+	//test_crear_arreglo();
 }
