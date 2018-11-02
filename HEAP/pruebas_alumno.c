@@ -54,7 +54,45 @@ void test_encolar() {
 	heap_destruir(heap, NULL);
 }
 
+void test_desencolar() {
+
+	printf("\n####### TEST DESENCOLAR #######\n");
+	heap_t* heap = heap_crear(comparar_numeros);
+
+	int arreglo[6] = {9,5,12,11,10,2};
+
+	bool encolo_ok = true;
+	for (int i = 0; i < 6 && encolo_ok; i++) {
+		encolo_ok = heap_encolar(heap, &arreglo[i]);
+	}
+	print_test("Encolar 6 elementos (9,5,12,11,10,2)", encolo_ok);
+	print_test("Ver max es 12", heap_ver_max(heap) == &arreglo[2]);
+
+	print_test("Desencolar es 12", heap_desencolar(heap) == &arreglo[2]);
+	print_test("Ver max es 11", heap_ver_max(heap) == &arreglo[3]);
+
+	print_test("Desencolar es 11", heap_desencolar(heap) == &arreglo[3]);
+	print_test("Ver max es 10", heap_ver_max(heap) == &arreglo[4]);
+
+	print_test("Desencolar es 10", heap_desencolar(heap) == &arreglo[4]);
+	//printf("Max %d\n", *((int*)(heap_ver_max(heap))));
+	print_test("Ver max es 9", heap_ver_max(heap) == &arreglo[0]);
+
+	print_test("Desencolar es 9", heap_desencolar(heap) == &arreglo[0]);
+	print_test("Ver max es 5", heap_ver_max(heap) == &arreglo[1]);
+
+	print_test("Desencolar es 5", heap_desencolar(heap) == &arreglo[1]);
+	print_test("Ver max es 2", heap_ver_max(heap) == &arreglo[5]);
+
+	print_test("Desencolar es 2", heap_desencolar(heap) == &arreglo[5]);
+	print_test("Ver max es NULL", heap_ver_max(heap) == NULL);
+
+	print_test("Desencolar es NULL", heap_desencolar(heap) == NULL);
+
+	heap_destruir(heap, NULL);
+}
 
 void pruebas_heap_alumno(void) {
 	test_encolar();
+	test_desencolar();
 }

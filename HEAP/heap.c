@@ -79,16 +79,22 @@ void downheap(heap_t* heap, size_t index_padre) {
     size_t i_hijo_der = get_index_der(index_padre);
     size_t i_hijo_izq = get_index_izq(index_padre);
 
-    // Me quedo con el menor de los hijos
-    size_t index_hijo = i_hijo_der > i_hijo_izq ? i_hijo_izq : i_hijo_der;
+    if (i_hijo_der >= heap->tam && i_hijo_izq >= heap->tam) return;
 
-    // Caso en el padre
-    if (index_hijo == -1) return;
-    if (heap->cmp(heap->arr[index_padre], heap->arr[index_hijo]) < 0) return;
+    // Me quedo con el mayor de los hijos
+
+    size_t index_hijo = 0;
+
+    if (i_hijo_der < heap->tam && i_hijo_izq < heap->tam)
+        index_hijo = heap->cmp(heap->arr[i_hijo_der], heap->arr[i_hijo_izq]) < 0 ? i_hijo_izq : i_hijo_der;
+    else
+        index_hijo = i_hijo_izq < heap->tam ? i_hijo_izq : i_hijo_der;
+
+    if (heap->cmp(heap->arr[index_padre], heap->arr[index_hijo]) > 0) return;
 
     swap(&heap->arr[index_padre], &heap->arr[index_hijo]);
 
-    downheap(heap, index_padre);
+    downheap(heap, index_hijo);
 
     return;
 
@@ -144,10 +150,11 @@ void *heap_desencolar(heap_t *heap) {
     if (heap->tam <= heap->capacidad / 4 && heap->tam > CAPACIDAD_INICIAL) {
         if (!heap_redimensionar(heap, FACTOR_ACHICAR)) return false;
     }
-    // Swapeo el primero con el ultimo
-    swap(&heap->arr[0], &heap->arr[heap->tam]);
 
-    void* elemento_quitado = heap->arr[heap->tam];
+    void* elemento_quitado = heap->arr[0];
+
+    // Swapeo el primero con el ultimo
+    swap(&heap->arr[0], &heap->arr[heap->tam - 1]);
 
     heap->tam--;
 
