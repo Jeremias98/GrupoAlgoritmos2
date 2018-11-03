@@ -26,19 +26,11 @@ size_t get_index_izq(size_t posicion) {
     return 2 * posicion + 1;
 }
 
-/*
-void swap(void* valor_1, void* valor_2) {
-    printf("%s\n", "Swap");
-    void* aux = valor_1;
-    valor_1 = valor_2;
-    valor_2 = aux;
-}*/
-
-void swap(void **p, void **q)
+void swap(void **valor_1, void **valor_2)
 {
-    void *t = *p;
-    *p = *q;
-    *q = t;
+    void *valor_aux = *valor_1;
+    *valor_1 = *valor_2;
+    *valor_2 = valor_aux;
 }
 
 bool heap_redimensionar(heap_t* heap, const double factor) {
@@ -99,14 +91,28 @@ void downheap(void* arr[], size_t tam, cmp_func_t cmp, size_t index_padre) {
     return;
 
 }
+bool _es_heap(void* arr[], size_t n, size_t idx_act, cmp_func_t cmp) {
+
+    if (idx_act >= n) return true;
+    size_t i_hijo_der = get_index_der(idx_act);
+    size_t i_hijo_izq = get_index_izq(idx_act);
+
+    if (i_hijo_izq < n && cmp(arr[i_hijo_izq], arr[idx_act]) > 0) return false;
+    if (i_hijo_der < n && cmp(arr[i_hijo_der], arr[idx_act]) > 0) return false;
+
+    return _es_heap(arr, n, i_hijo_izq, cmp) && _es_heap(arr, n, i_hijo_der, cmp); 
+}
+
+bool es_heap(void* elementos[], size_t cant, cmp_func_t cmp) {
+    return _es_heap(elementos, cant, 0, cmp);
+}
 
 void heapify(void* elementos[], size_t cant, cmp_func_t cmp) {
 
     if(!elementos || cant<= 0 || !cmp) return;
 
-    for(size_t i = cant-1; i >= 0; i --) downheap(elementos, cant, cmp, i);
+    for(int i = (int)cant-1; i >= 0; i --) downheap(elementos, cant, cmp, i);
 }
-
 
 heap_t *heap_crear(cmp_func_t cmp) {
 
@@ -203,3 +209,17 @@ void heap_destruir(heap_t *heap, void destruir_elemento(void *e)) {
 
 }
 
+void _heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
+  
+    if (cant == 0) return;
+
+    swap(&elementos[0], &elementos[cant-1]);
+    downheap(elementos, cant-1, cmp, 0);
+    _heap_sort(elementos, cant-1, cmp);
+}    
+
+void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
+ 
+    heapify(elementos, cant, cmp);
+    _heap_sort(elementos, cant, cmp);
+}
