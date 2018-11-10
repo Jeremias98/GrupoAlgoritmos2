@@ -1,11 +1,15 @@
 #define _POSIX_C_SOURCE 200809L
+#define TAM_CLAVE_ABB 30
+#define TAM_CLAVE_HEAP 12
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "tp2.h"
 #include "strutil.h"
 #include "heap.h"
+#include "pila.h"
 
 struct vuelo {
     char* flight_n;
@@ -84,6 +88,20 @@ int num_comando(const char* str, char** strv_operadores) {
     return 0;
 }
 
+size_t n_parametros(char* strv[]) {
+    size_t i = 0;
+    while(strv[i]) i++;
+    return i; 
+}
+
+bool str_es_num(const char* str) {
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        if(!isdigit(str[i])) return false;
+    }
+    return true;
+}
+
 bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash) {
 
     FILE* archiv = fopen(ruta, "r");
@@ -102,12 +120,67 @@ bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash) {
         }
         else {
             vuelo_t* vuelo = vuelo_crear(strv_datos_vuelo, NULL);
-            if (!abb_guardar(abb, vuelo->date, vuelo) || !hash_guardar(hash, vuelo->flight_n, vuelo)) return false;
+            //LA CLAVE ES DEL TIPO "<DATE> - <N VUELO>"
+            char clave_abb[TAM_CLAVE_ABB];
+            strcpy(clave_abb, vuelo->date);
+            strcat(clave_abb, " - ");
+            strcat(clave_abb, vuelo->flight_n);
+            if (!abb_guardar(abb, clave_abb, NULL) || !hash_guardar(hash, vuelo->flight_n, vuelo)) return false;
         }
         free(strv_datos_vuelo);   
     }
     free(linea);
     fclose(archiv);
+    return true;
+}
+
+void imprimir_pila_asc(pila_t* p_result, bool asc, bool liberar) {
+
+    if (asc) {
+        
+        char* result = pila_desapilar(p_result);
+        if (!pila_esta_vacia(p_result)) imprimir_pila_asc(p_result, true, liberar);
+        if (result) fprintf(stdout, "%s\n", result);
+        if (liberar) free(result);
+        return;
+    }
+    while(!pila_esta_vacia(p_result)) {
+        
+        char* result = pila_desapilar(p_result);
+        fprintf(stdout, "%s\n", result);
+        if (liberar) free(result);
+    }
+    return;
+}
+
+bool ver_tablero(char* k, char* modo, char* desde, char* hasta, abb_t* abb) {
+
+    if (!str_es_num(k) || strcmp(k, "0") == 0) return false;
+    if (!strcmp(modo, "asc") == 0 && !strcmp(modo, "desc") == 0) return false;
+    if (strcmp(desde, hasta) > 0) return false;
+
+    int cont = 0;
+    int k_vuelos = atoi(k);
+    pila_t* p_result = pila_crear();
+    abb_iter_t* iter = abb_iter_in_crear(abb);
+
+    while(!abb_iter_in_al_final(iter)) {
+        
+        const char* date = abb_iter_in_ver_actual(iter);
+        
+        if ((strcmp(date, hasta) > 0) || cont == k_vuelos) break;
+        if (strcmp(date, desde) > 0) {
+            pila_apilar(p_result, (void*) date);
+            cont ++;
+        }
+        abb_iter_in_avanzar(iter);
+    }
+
+    if (strcmp(modo, "asc") == 0) imprimir_pila_asc(p_result, true, false);
+    else imprimir_pila_asc(p_result, false, false);
+
+    pila_destruir(p_result);
+    abb_iter_in_destruir(iter);
     return true;
 }
 
@@ -122,6 +195,62 @@ bool imprimir_info_vuelo(const char* flight_n, hash_t* hash) {
     return true;
 }        
 
+int cmp_prioridad (const void* str1, const void* str2) {
+    
+    char** strv1 = split(str1, '-');
+    char** strv2 = split(str2, '-');
+
+    int prioridad1 = atoi(strv1[0]);
+    int prioridad2 = atoi(strv2[0]);
+    int res;
+
+    if (prioridad1 < prioridad2) res =  1;
+    else if (prioridad1 > prioridad2) res = -1;   
+    else res = strcmp(strv1[1], strv2[1]);
+    
+    free_strv(strv1);
+    free_strv(strv2);
+    return res;
+}
+
+bool prioridad_vuelos(char* k, hash_t* hash) {
+
+    if (!str_es_num(k) || strcmp(k, "0") == 0) return false;
+
+    heap_t* heap = heap_crear(cmp_prioridad);
+    pila_t* pila = pila_crear();
+    int k_vuelos = atoi(k);
+
+    int cont = 0;
+    hash_iter_t* iter = hash_iter_crear(hash);
+    
+    while (!hash_iter_al_final(iter)) {
+
+        const char* n_vuelo = hash_iter_ver_actual(iter);
+        vuelo_t* vuelo = hash_obtener(hash, n_vuelo);
+        
+        char* clave = malloc(sizeof(char) * TAM_CLAVE_HEAP);
+        if (!clave) return false;
+        strcpy(clave, vuelo->priority);
+        strcat(clave, " - ");
+        strcat(clave, vuelo->flight_n);
+        
+        heap_encolar(heap, (void*) clave);
+        hash_iter_avanzar(iter);
+        cont ++;
+
+        if (cont > k_vuelos) free(heap_desencolar(heap));  
+    }
+    while (!heap_esta_vacio(heap)) pila_apilar(pila, heap_desencolar(heap));
+
+    imprimir_pila_asc(pila, false, true);
+
+    hash_iter_destruir(iter);
+    heap_destruir(heap, free);
+    pila_destruir(pila);
+    return true;
+}
+
 int main(int argc, char* argr[]) {
 
     if (argc != 1) {
@@ -129,9 +258,9 @@ int main(int argc, char* argr[]) {
         return 0;
     }
 
-    // ESTRUCUTURAS DONDE SE VAN A GUARDAR LOS STRUCT VUELO
-    // ABB PARA ORDENAR LA TABLA POR DATE Y EL HASH PARA OBTENER LOS DATOS
-    // DEL VUELO EN O(1).
+    // ESTRUCUTURAS UTILES PARA LOS COMANDOS
+    // ABB PARA ORDENAR LA TABLA POR DATE (CLAVE) (DATOS null) Y EL HASH (DATOS struct vuelo) 
+    // PARA OBTENER LOS DATOS DEL VUELO EN O(1).
 
     abb_t* abb = abb_crear(strcmp, NULL);
     hash_t* hash = hash_crear((hash_destruir_dato_t) vuelo_destruir);
@@ -142,35 +271,41 @@ int main(int argc, char* argr[]) {
     
     while((getline(&linea, &capacidad, stdin)) > 0) { 
 
+        bool comand_error = false;
         linea[strlen(linea) - 1] = '\0';
         char** strv_linea = split(linea, ' ');
-        
+        if (!strv_linea[0]) continue;  //SI NO SE INGRESA NINGUN COMANDO (?)
+
         //CASO EL COMANDO ES AGREGAR ARCHIVO
         if(strcmp(strv_linea[0], strv_comands[0]) == 0) {
             
-            if (!strv_linea[1] || !agregar_archivo(strv_linea[1], abb, hash)) {
-                fprintf(stderr, "%s\n", "Error en comando agregar_archivo");
+            if (n_parametros(strv_linea) != 2 || !agregar_archivo(strv_linea[1], abb, hash)) {
+                comand_error = true;
             }
-            else fprintf(stdout, "%s\n", "OK");
         }
 
         //CASO COMANDO ES VER TABLERO
         else if(strcmp(strv_linea[0], strv_comands[1]) == 0) {
-            continue;
+
+            if (n_parametros(strv_linea) != 5 || !ver_tablero(strv_linea[1], strv_linea[2], strv_linea[3], strv_linea[4], abb)) {
+                comand_error = true;
+            }
         }
 
         //CASO COMANDO INFO VUELO
         else if(strcmp(strv_linea[0], strv_comands[2]) == 0) {
             
-            if (!strv_linea[1] || !imprimir_info_vuelo(strv_linea[1], hash)) {
-                fprintf(stderr, "%s\n", "Error en comando info_vuelo");
+            if (n_parametros(strv_linea) != 2 || !imprimir_info_vuelo(strv_linea[1], hash)) {
+                comand_error = true;
             }
-            else fprintf(stdout, "%s\n", "OK");
         }
         
         //CASO PRIORIDAD VUELOS
         else if(strcmp(strv_linea[0], strv_comands[3]) == 0) {
-            continue;
+            
+            if (n_parametros(strv_linea) != 2 || !prioridad_vuelos(strv_linea[1], hash)) {
+                comand_error = true;
+            }
         } 
 
         //CASO COMANDO ES BORRAR
@@ -179,10 +314,10 @@ int main(int argc, char* argr[]) {
         }
 
         //CASO NO ES COMANDO VÁLIDO
-        else{
-            fprintf(stderr, "%s\n", "Error comando inválido");
-            continue;
-        }
+        else comand_error = true;
+
+        if (comand_error) fprintf(stderr, "%s %s\n", "Error en comando", strv_linea[0]);
+        else fprintf(stdout, "%s\n", "OK");
         free_strv(strv_linea);
     }
     free(linea);
