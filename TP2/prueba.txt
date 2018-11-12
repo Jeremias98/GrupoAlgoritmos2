@@ -15,3 +15,7 @@ agregar_archivo vuelos-algueiza-parte-03.csv
 agregar_archivo vuelos-algueiza-parte-04.csv
 agregar_archivo vuelos-algueiza-parte-05.csv
 prioridad_vuelos 8
+
+agregar_archivo vuelos-algueiza-parte-01.csv
+ver_tablero 100 asc 2018-04-10T23:22:55 2018-11-11T07:51:19
+borrar 2018-04-10T23:22:55 2018-11-11T07:51:19

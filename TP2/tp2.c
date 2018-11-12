@@ -251,6 +251,54 @@ bool prioridad_vuelos(char* k, hash_t* hash) {
     return true;
 }
 
+bool borrar(char* fecha_desde, char* fecha_hasta, hash_t* hash, abb_t* abb) {
+	
+	hash_iter_t* iter_hash = hash_iter_crear(hash);
+	
+	vuelo_t* vuelo = NULL;
+	const char* nro_vuelo = NULL;
+	bool termino = false;
+	
+	while(!hash_iter_al_final(iter_hash) && !termino) {
+		
+		nro_vuelo = hash_iter_ver_actual(iter_hash);
+		if (!nro_vuelo) return false;
+		vuelo = hash_obtener(hash, nro_vuelo);
+		
+		if (strcmp(vuelo->date, fecha_hasta) > 0) termino = true;
+		else if (strcmp(vuelo->date, fecha_desde) >= 0) {
+			fprintf(stdout, "%s - %s\n", vuelo->flight_n, vuelo->date);
+			hash_borrar(hash, nro_vuelo);
+		}
+		
+		hash_iter_avanzar(iter_hash);
+	}
+	
+	hash_iter_destruir(iter_hash);
+	
+	fprintf(stdout, "\n");
+	
+	abb_iter_t* iter_abb = abb_iter_in_crear(abb);
+	termino = false;
+	
+	while(!abb_iter_in_al_final(iter_abb) && !termino) {
+		
+		const char* fecha_vuelo = abb_iter_in_ver_actual(iter_abb);
+		
+		if (strcmp(fecha_vuelo, fecha_hasta) > 0) termino = true;
+		else if (strcmp(fecha_vuelo, fecha_desde) >= 0) {
+			abb_borrar(abb, fecha_vuelo);
+		}
+		
+		abb_iter_in_avanzar(iter_abb);
+		
+	}
+	
+	abb_iter_in_destruir(iter_abb);
+	
+	return true;
+}
+
 int main(int argc, char* argr[]) {
 
     if (argc != 1) {
@@ -263,7 +311,8 @@ int main(int argc, char* argr[]) {
     // PARA OBTENER LOS DATOS DEL VUELO EN O(1).
 
     abb_t* abb = abb_crear(strcmp, NULL);
-    hash_t* hash = hash_crear((hash_destruir_dato_t) vuelo_destruir);
+    //hash_t* hash = hash_crear((hash_destruir_dato_t) vuelo_destruir);
+    hash_t* hash = hash_crear(NULL);
 
     char* linea = NULL; 
     size_t capacidad = 0;
@@ -310,7 +359,10 @@ int main(int argc, char* argr[]) {
 
         //CASO COMANDO ES BORRAR
         else if(strcmp(strv_linea[0], strv_comands[4]) == 0) {
-            continue;
+			
+			if (n_parametros(strv_linea) != 3 || !borrar(strv_linea[1], strv_linea[2], hash, abb)) {
+                comand_error = true;
+            }
         }
 
         //CASO NO ES COMANDO VÁLIDO
