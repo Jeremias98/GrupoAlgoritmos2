@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -std=c99 -Wall -Wtype-limits -pedantic -Wconversion -Wno-sign-conversion 
+CFLAGS = -g -std=c99 -Wall -Wtype-limits -pedantic -Wconversion -Wno-sign-conversion
 VFLAGS = --leak-check=full --track-origins=yes --show-reachable=yes
 
 CFILES = *.c
@@ -14,7 +14,7 @@ run: build
 	./$(EXEC_S)
 
 valgrind: build
-	valgrind $(VFLAGS) ./$(EXEC_S) < pruebaborrar.txt
+	valgrind $(VFLAGS) ./$(EXEC_S) < pruebasborde.txt
 
 gdb: build
 	gdb $(GDBFLAGS) ./$(EXEC_S)
@@ -24,4 +24,3 @@ runtime: build
 
 clean:
 	rm -f *.o $(EXEC_S)
-
