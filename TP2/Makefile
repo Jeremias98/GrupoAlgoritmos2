@@ -14,7 +14,7 @@ run: build
 	./$(EXEC_S)
 
 valgrind: build
-	valgrind $(VFLAGS) ./$(EXEC_S) < prueba.txt
+	valgrind $(VFLAGS) ./$(EXEC_S) < pruebaborrar.txt
 
 gdb: build
 	gdb $(GDBFLAGS) ./$(EXEC_S)
