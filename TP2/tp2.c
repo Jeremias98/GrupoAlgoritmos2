@@ -279,7 +279,7 @@ char* obtener_n_vuelo(const char* clave_date_abb) {
 
 bool borrar(char* fecha_desde, char* fecha_hasta, hash_t* hash, abb_t* abb) {
 	
-    pila_t* p_result = pila_crear();
+    pila_t* p_borrar = pila_crear();
     abb_iter_t* iter = abb_iter_in_crear(abb);
 
     while(!abb_iter_in_al_final(iter)) {
@@ -292,13 +292,15 @@ bool borrar(char* fecha_desde, char* fecha_hasta, hash_t* hash, abb_t* abb) {
             char* n_vuelo = obtener_n_vuelo(date);
             imprimir_info_vuelo(n_vuelo, hash);
             vuelo_destruir(hash_borrar(hash, n_vuelo));
-            abb_borrar(abb, date);
+            pila_apilar(p_borrar, (void*) date);
             free(n_vuelo);
         }
         abb_iter_in_avanzar(iter);
     }
-
-    pila_destruir(p_result);
+    while (!pila_esta_vacia(p_borrar)) {
+        abb_borrar(abb, (const char*)pila_desapilar(p_borrar));
+    }
+    pila_destruir(p_borrar);
     abb_iter_in_destruir(iter);
     return true;
 }

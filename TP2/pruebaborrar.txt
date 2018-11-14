@@ -1,20 +1,10 @@
 agregar_archivo vuelos-algueiza-parte-01.csv
-info_vuelo 2287
-info_vuelo 1086
 agregar_archivo vuelos-algueiza-parte-02.csv
-info_vuelo 2287
-info_vuelo 1086
 agregar_archivo vuelos-algueiza-parte-03.csv
-info_vuelo 2287
-info_vuelo 1086
 agregar_archivo vuelos-algueiza-parte-04.csv
-info_vuelo 2287
-info_vuelo 1086
 agregar_archivo vuelos-algueiza-parte-05.csv
-info_vuelo 2287
-info_vuelo 1086
 ver_tablero 50 asc 2018-04-10T23:22:55 2018-11-11T07:51:19
 borrar 2018-06-01T00:00:00 2018-06-31T00:00:00
 ver_tablero 50 asc 2018-04-10T23:22:55 2018-11-11T07:51:19
+info_vuelo 840
 info_vuelo 89
-info_vuelo 1086
