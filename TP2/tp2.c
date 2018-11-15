@@ -9,7 +9,7 @@
 #include "tp2.h"
 #include "strutil.h"
 #include "heap.h"
-#include "pila.h"
+
 
 struct vuelo {
     char* flight_n;
@@ -102,6 +102,14 @@ bool str_es_num(const char* str) {
     return true;
 }
 
+void crear_clave(char* clave, char* str1, char* str2) {
+    
+    //MODIFICA EL STR CLAVE EN EL FORMATO <STR1 - STR2>   
+    strcpy(clave, str1);
+    strcat(clave, " - ");
+    strcat(clave, str2);
+}
+
 bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash) {
 
     FILE* archiv = fopen(ruta, "r");
@@ -122,9 +130,7 @@ bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash) {
 
             //BORRO LA CLAVE DEL ABB ANTES DE ACTUALIZAR EL VUELO
             char clave_abb_borrar[TAM_CLAVE_ABB];
-            strcpy(clave_abb_borrar, vuelo->date);
-            strcat(clave_abb_borrar, " - ");
-            strcat(clave_abb_borrar, vuelo->flight_n);
+            crear_clave(clave_abb_borrar, vuelo->date, vuelo->flight_n);
             abb_borrar(abb, clave_abb_borrar);
 
             vuelo_crear(strv_datos_vuelo, vuelo);
@@ -134,11 +140,8 @@ bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash) {
             if(!hash_guardar(hash, vuelo->flight_n, vuelo)) return false;
         }
         //LA CLAVE ES DEL TIPO "<DATE> - <N VUELO>"
-        //NO PUDE HACER UNA FUNCION PARA CREAR UNA CLAVE ABB ESTATICA
         char clave_abb[TAM_CLAVE_ABB];
-        strcpy(clave_abb, vuelo->date);
-        strcat(clave_abb, " - ");
-        strcat(clave_abb, vuelo->flight_n);
+        crear_clave(clave_abb, vuelo->date, vuelo->flight_n);
         if (!abb_guardar(abb, clave_abb, NULL)) return false;
 
         free(strv_datos_vuelo);
@@ -251,13 +254,10 @@ bool prioridad_vuelos(char* k, hash_t* hash) {
         const char* n_vuelo = hash_iter_ver_actual(iter);
         vuelo_t* vuelo = hash_obtener(hash, n_vuelo);
 
-        char* clave = malloc(sizeof(char) * TAM_CLAVE_HEAP);
-        if (!clave) return false;
-        strcpy(clave, vuelo->priority);
-        strcat(clave, " - ");
-        strcat(clave, vuelo->flight_n);
+        char clave_heap[TAM_CLAVE_HEAP];
+        crear_clave(clave_heap, vuelo->priority, vuelo->flight_n);
 
-        heap_encolar(heap, (void*) clave);
+        heap_encolar(heap, (void*) strdup(clave_heap));
         hash_iter_avanzar(iter);
         cont ++;
 
@@ -273,18 +273,6 @@ bool prioridad_vuelos(char* k, hash_t* hash) {
     return true;
 }
 
-char* obtener_n_vuelo(const char* clave_date_abb) {
-
-    char vuelo [6];
-    int j = 0;
-    for (int i = 22; clave_date_abb[i] != '\0'; i++) {
-        vuelo[j] = clave_date_abb[i];
-        j++;
-    }
-    vuelo[j] = '\0';
-    return strdup(vuelo);
-}
-
 bool borrar(char* fecha_desde, char* fecha_hasta, hash_t* hash, abb_t* abb) {
 
     pila_t* p_borrar = pila_crear();
@@ -296,15 +284,14 @@ bool borrar(char* fecha_desde, char* fecha_hasta, hash_t* hash, abb_t* abb) {
 
         char** date_spliteada =  split(date, ' '); // split por espacio en blanco
         char* fecha_simple = date_spliteada[0]; // El [1] es un "-"
-        char* nro_vuelo = date_spliteada[2];
+        char* n_vuelo = date_spliteada[2];
 
         if (strcmp(date, fecha_hasta) > 0 && strcmp(fecha_simple, fecha_hasta) != 0) {
             free_strv(date_spliteada);
             break;
         }
-        if (strcmp(date, fecha_desde) > 0 || strcmp(fecha_simple, fecha_hasta) == 0) {
+        if (strcmp(date, fecha_desde) > 0) {
 
-            char* n_vuelo = nro_vuelo;
             imprimir_info_vuelo(n_vuelo, hash);
             vuelo_destruir(hash_borrar(hash, n_vuelo));
             pila_apilar(p_borrar, (void*) date);
@@ -328,8 +315,8 @@ int main(int argc, char* argr[]) {
     }
 
     // ESTRUCUTURAS UTILES PARA LOS COMANDOS
-    // ABB PARA ORDENAR LA TABLA POR DATE (CLAVE) (DATOS null) Y EL HASH (DATOS struct vuelo)
-    // PARA OBTENER LOS DATOS DEL VUELO EN O(1).
+    // ABB CLAVE <DATE - N_VUELO> DATO NULL. PARA FILTRAR LOS VUELOS POR FECHA
+    // HASH CLAVE <N_VUELO> DATO struct vuelo. PARA OBTENER LOS DATOS DEL VUELO EN O(1).
 
     abb_t* abb = abb_crear(strcmp, NULL);
     hash_t* hash = hash_crear((hash_destruir_dato_t) vuelo_destruir);
