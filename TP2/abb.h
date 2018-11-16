@@ -40,5 +40,9 @@ bool abb_iter_in_al_final(const abb_iter_t *iter);
 
 void abb_iter_in_destruir(abb_iter_t* iter);
 
+/**************** PRIMITIVAS EXTRA TP2 **********************/
+
+abb_iter_t *abb_iter_in_crear_inicio(const abb_t *arbol, const char* inicio);
+
 
 #endif //ABB_H

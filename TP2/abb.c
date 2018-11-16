@@ -319,3 +319,36 @@ void abb_iter_in_destruir(abb_iter_t* iter) {
 	free(iter);
 	
 }
+
+/********************* PRIMITIVAS EXTRA TP2 ******************************/
+
+void apilar_inorder_inicio(pila_t* pila, abb_nodo_t* raiz, abb_comparar_clave_t cmp, const char* clave_inicio) {
+	
+	abb_nodo_t* actual = raiz;
+	while (actual) {
+		
+		if (cmp(actual->clave, clave_inicio) < 0) actual = actual->der;
+		
+		else {
+			pila_apilar(pila, actual);
+			if (cmp(actual->clave, clave_inicio) == 0) actual = NULL;
+			else actual = actual->izq;
+		}
+	}
+}
+
+abb_iter_t *abb_iter_in_crear_inicio(const abb_t *arbol, const char* clave_inicio) {
+	
+	//CREA UN ABB ITER CON INICIO EN EL NODO INICIO
+	abb_iter_t* iter = malloc(sizeof(abb_iter_t));
+	if (!iter) return NULL;
+	
+	iter->pila = pila_crear();
+	if (!iter->pila) return NULL;
+	
+	// Apilo inicio y todos los hijos izquierdos
+	apilar_inorder_inicio(iter->pila, arbol->raiz, arbol->cmp, clave_inicio);
+	
+	return iter;
+	
+}

@@ -178,8 +178,9 @@ bool ver_tablero(char* k, char* modo, char* desde, char* hasta, abb_t* abb) {
 
     int cont = 0;
     int k_vuelos = atoi(k);
+
     pila_t* p_result = pila_crear();
-    abb_iter_t* iter = abb_iter_in_crear(abb);
+    abb_iter_t* iter = abb_iter_in_crear_inicio(abb, desde);
 
     while(!abb_iter_in_al_final(iter)) {
 
@@ -187,7 +188,7 @@ bool ver_tablero(char* k, char* modo, char* desde, char* hasta, abb_t* abb) {
         char** date_spliteada =  split(date, ' ');
         char* fecha_simple = date_spliteada[0];
 
-        if ( ( strcmp(date, hasta) > 0 && strcmp(fecha_simple, hasta) != 0 ) || cont == k_vuelos) {
+        if ((strcmp(date, hasta) > 0 && strcmp(fecha_simple, hasta) != 0 ) || cont == k_vuelos) {
             free_strv(date_spliteada);
             break;
         }
@@ -276,7 +277,7 @@ bool prioridad_vuelos(char* k, hash_t* hash) {
 bool borrar(char* fecha_desde, char* fecha_hasta, hash_t* hash, abb_t* abb) {
 
     pila_t* p_borrar = pila_crear();
-    abb_iter_t* iter = abb_iter_in_crear(abb);
+    abb_iter_t* iter = abb_iter_in_crear_inicio(abb, fecha_desde);
 
     while(!abb_iter_in_al_final(iter)) {
 
