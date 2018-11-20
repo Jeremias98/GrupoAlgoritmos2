@@ -151,21 +151,29 @@ bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash) {
     return true;
 }
 
-void imprimir_pila_asc(pila_t* p_result, bool asc, bool liberar) {
+void imprimir_pila_asc(pila_t* p_desc, int k_vuelos, bool asc, bool liberar) {
 
+    int cont = k_vuelos;    
     if (asc) {
 
-        char* result = pila_desapilar(p_result);
-        if (!pila_esta_vacia(p_result)) imprimir_pila_asc(p_result, true, liberar);
-        if (result) fprintf(stdout, "%s\n", result);
-        if (liberar) free(result);
-        return;
-    }
-    while(!pila_esta_vacia(p_result)) {
+        pila_t* p_asc = pila_crear();
+        while (!pila_esta_vacia(p_desc)) pila_apilar(p_asc, pila_desapilar(p_desc));
+        while (cont > 0 && !pila_esta_vacia(p_asc)) {    
+            
+            char* result = pila_desapilar(p_asc);
+            fprintf(stdout, "%s\n", result);
+            if (liberar) free(result);
+            cont --;
+        }
+        pila_destruir(p_asc);
+    } else {
+        while (cont > 0 && !pila_esta_vacia(p_desc)) {
 
-        char* result = pila_desapilar(p_result);
-        fprintf(stdout, "%s\n", result);
-        if (liberar) free(result);
+            char* result = pila_desapilar(p_desc);
+            fprintf(stdout, "%s\n", result);
+            if (liberar) free(result);
+            cont --;
+        }
     }
     return;
 }
@@ -180,6 +188,8 @@ bool ver_tablero(char* k, char* modo, char* desde, char* hasta, abb_t* abb) {
     int k_vuelos = atoi(k);
 
     pila_t* p_result = pila_crear();
+    // EL ITERADOR SE UBICA EN EL VUELO CON FECHA DESDE O EL PROXIMO 
+    // MAYOR A LA FECHA DESDE
     abb_iter_t* iter = abb_iter_in_crear_inicio(abb, desde);
 
     while(!abb_iter_in_al_final(iter)) {
@@ -188,22 +198,20 @@ bool ver_tablero(char* k, char* modo, char* desde, char* hasta, abb_t* abb) {
         char** date_spliteada =  split(date, ' ');
         char* fecha_simple = date_spliteada[0];
 
-        if ((strcmp(date, hasta) > 0 && strcmp(fecha_simple, hasta) != 0 ) || cont == k_vuelos) {
+        if (strcmp(date, hasta) > 0 && strcmp(fecha_simple, hasta) != 0 ) {
             free_strv(date_spliteada);
             break;
         }
-        if (strcmp(date, desde) > 0 || strcmp(fecha_simple, hasta) == 0) {
-            pila_apilar(p_result, (void*) date);
-            cont ++;
-        }
-
+        pila_apilar(p_result, (void*) date);
+        cont ++;
+    
         free_strv(date_spliteada);
 
         abb_iter_in_avanzar(iter);
     }
 
-    if (strcmp(modo, "asc") == 0) imprimir_pila_asc(p_result, true, false);
-    else imprimir_pila_asc(p_result, false, false);
+    if (strcmp(modo, "asc") == 0) imprimir_pila_asc(p_result, k_vuelos, true, false);
+    else imprimir_pila_asc(p_result, k_vuelos, false, false);
 
     pila_destruir(p_result);
     abb_iter_in_destruir(iter);
@@ -266,7 +274,7 @@ bool prioridad_vuelos(char* k, hash_t* hash) {
     }
     while (!heap_esta_vacio(heap)) pila_apilar(pila, heap_desencolar(heap));
 
-    imprimir_pila_asc(pila, false, true);
+    imprimir_pila_asc(pila, k_vuelos, false, true);
 
     hash_iter_destruir(iter);
     heap_destruir(heap, free);
@@ -291,12 +299,10 @@ bool borrar(char* fecha_desde, char* fecha_hasta, hash_t* hash, abb_t* abb) {
             free_strv(date_spliteada);
             break;
         }
-        if (strcmp(date, fecha_desde) > 0) {
-
-            imprimir_info_vuelo(n_vuelo, hash);
-            vuelo_destruir(hash_borrar(hash, n_vuelo));
-            pila_apilar(p_borrar, (void*) date);
-        }
+        imprimir_info_vuelo(n_vuelo, hash);
+        vuelo_destruir(hash_borrar(hash, n_vuelo));
+        pila_apilar(p_borrar, (void*) date);
+        
         free_strv(date_spliteada);
         abb_iter_in_avanzar(iter);
     }

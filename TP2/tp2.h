@@ -38,10 +38,10 @@ void crear_clave(char* clave, char* str1, char* str2);
 // FUNCION PARA COMANDO AGREGAR_ARCHIVO
 bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash);
 
-// IMPRIME LA PILA DE FORMA ASCENDENTE (DEL ULTIMO AL PRIMERO) SI ASC  ES TRUE
-// CASO CONTRARIO IMPRIME DE FORMA DESCENDIENTE. SI LIBERAR ES TRUE DESTRUYE
-// LOS ELEMENTOS DESAPILADOS.
-void imprimir_pila_asc(pila_t* p_result, bool asc, bool liberar);
+// IMPRIME LA PILA LOS K VUELOS DE FORMA ASCENDENTE (DEL ULTIMO AL PRIMERO)
+// SI ASC  ES TRUE CASO CONTRARIO IMPRIME DE FORMA DESCENDIENTE.
+// SI LIBERAR ES TRUE DESTRUYE LOS ELEMENTOS DESAPILADOS.
+void imprimir_pila_asc(pila_t* p_desc, int k_vuelos, bool asc, bool liberar);
 
 // FUNCION PARA COMANDO VER_TABLERO.
 bool ver_tablero(char* k, char* modo, char* desde, char* hasta, abb_t* abb);
