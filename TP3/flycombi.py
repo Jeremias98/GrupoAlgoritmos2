@@ -59,20 +59,42 @@ class FlyComby():
 
             self._grafo.agregar_arista(vuelo.cod_origen, vuelo.cod_destino, vuelo)
 
+    def ejecutar_comando(self, comando, argumento):
+
+        if comando == "camino_mas" and len(argumento) == 3:
+            return self.camino_mas(argumento[0], argumento[1], argumento[2])
+
+        return False
+
+
     def procesar_entrada(self):
         #for aeropuerto in self._ciudades["Albany"]:
             #aeropuerto.imprimir_datos()
         print("FlyComby >> ", end="", flush=True)
         while True:
-            linea = sys.stdin.readline()
-            linea = linea[:-1]
 
-            if linea == "listar_operaciones":
-                self.listar_operaciones()
-            elif linea in self._comandos:
-                print("Comando ok")
-            else:
-                print("Error: comando desconocido")
+            linea = sys.stdin.readline()
+
+            if linea:
+                linea = linea[:-1]
+
+                cmd_spliteado = str.split(linea)
+                comando = cmd_spliteado[0]
+                argumento = None
+
+                if len(cmd_spliteado) > 1:
+                    argumento = cmd_spliteado[1:len(cmd_spliteado)]
+
+                if comando == "listar_operaciones":
+                    self.listar_operaciones()
+                elif comando == "quit":
+                    break
+                elif comando in self._comandos:
+                    if not self.ejecutar_comando(comando, argumento):
+                        print("Error en comando {}".format(comando))
+                else:
+                    print("Error: comando desconocido")
+
                 self.procesar_entrada()
 
     def listar_operaciones(self):
@@ -81,6 +103,8 @@ class FlyComby():
 
         self.procesar_entrada()
 
+    def camino_mas(self, tipo, desde, hasta):
+        return True
 
 
 if len(sys.argv) < 3:
