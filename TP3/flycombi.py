@@ -1,4 +1,5 @@
 from clasesflycombi import Grafo
+import lib_aeropuertos as lib
 import sys
 import csv
 
@@ -30,85 +31,93 @@ class Vuelo:
         print("{} {} {} {} {}".format(self.cod_origen, self.cod_destino, self.tiempo_promedio, self.precio, self.cant_vuelos_entre_aeropuertos))
 
 
+def procesar_datos(grafo, ciudades, vuelos, aeropuertos_csv, vuelos_csv):
 
-class FlyComby():
+    file_aeropuertos = open(aeropuertos_csv, newline='')
+    file_vuelos = open(vuelos_csv, "r")
 
-    def __init__(self, aeropuertos_csv, vuelos_csv):
-        self._file_aeropuertos = open(aeropuertos_csv, newline='')
-        self._file_vuelos = open(vuelos_csv, "r")
-        self._grafo = Grafo()
-        self._ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1)
-        self._vuelos = {} # Guardo en un 'hash' los vuelos por código asi accedo en O(1)
-        self._comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones"]
+    lector = csv.reader(file_aeropuertos, delimiter=',')
+    for fila in lector:
+        ciudad = fila[0]
+        if ciudad not in ciudades:
+            ciudades[ciudad] = []
 
-        lector = csv.reader(self._file_aeropuertos, delimiter=',')
-        for fila in lector:
-            ciudad = fila[0]
-            if ciudad not in self._ciudades:
-                self._ciudades[ciudad] = []
+        aeropuerto = Aeropuerto(fila[1], fila[2], fila[3])
+        ciudades[ciudad].append(aeropuerto)
 
-            aeropuerto = Aeropuerto(fila[1], fila[2], fila[3])
-            self._ciudades[ciudad].append(aeropuerto)
-
-            self._grafo.agregar_vertice(aeropuerto.codigo)
+        grafo.agregar_vertice(aeropuerto.codigo)
 
 
-        lector = csv.reader(self._file_vuelos, delimiter=',')
-        for fila in lector:
-            vuelo = Vuelo(fila[0], fila[1], fila[2], fila[3], fila[4])
+    lector = csv.reader(file_vuelos, delimiter=',')
+    for fila in lector:
+        vuelo = Vuelo(fila[0], fila[1], fila[2], fila[3], fila[4])
+        vuelos.add(vuelo)
 
-            self._grafo.agregar_arista(vuelo.cod_origen, vuelo.cod_destino, vuelo)
-
-    def ejecutar_comando(self, comando, argumento):
-
-        if comando == "camino_mas" and len(argumento) == 3:
-            return self.camino_mas(argumento[0], argumento[1], argumento[2])
-
-        return False
+        grafo.agregar_arista(vuelo.cod_origen, vuelo.cod_destino, vuelo)
 
 
-    def procesar_entrada(self):
-        #for aeropuerto in self._ciudades["Albany"]:
-            #aeropuerto.imprimir_datos()
-        print("FlyComby >> ", end="", flush=True)
-        while True:
+def ejecutar_comando(grafo, comando, parametros):
 
-            linea = sys.stdin.readline()
+    if comando == "camino_mas" and len(parametros) == 3:
+        return lib.camino_mas(grafo, parametros[0], parametros[1], parametros[2])
 
-            if linea:
-                linea = linea[:-1]
-
-                cmd_spliteado = str.split(linea)
-                comando = cmd_spliteado[0]
-                argumento = None
-
-                if len(cmd_spliteado) > 1:
-                    argumento = cmd_spliteado[1:len(cmd_spliteado)]
-
-                if comando == "listar_operaciones":
-                    self.listar_operaciones()
-                elif comando == "quit":
-                    break
-                elif comando in self._comandos:
-                    if not self.ejecutar_comando(comando, argumento):
-                        print("Error en comando {}".format(comando))
-                else:
-                    print("Error: comando desconocido")
-
-                self.procesar_entrada()
-
-    def listar_operaciones(self):
-        for comando in self._comandos:
-            print(comando)
-
-        self.procesar_entrada()
-
-    def camino_mas(self, tipo, desde, hasta):
-        return True
+    return False
 
 
-if len(sys.argv) < 3:
-    print("Cantidad de argumentos inválida")
-else:
-    flycomby = FlyComby(sys.argv[1], sys.argv[2])
-    flycomby.procesar_entrada()
+def procesar_entrada(grafo, comandos):
+
+    print("FlyComby >> ", end="", flush=True)  #Se debe imprimir el encabezado?
+    
+    linea = sys.stdin.readline()
+    while linea:
+
+        #hay_error = False
+        linea = linea[:-1]
+
+        cmd_spliteado = str.split(linea)
+        comando = cmd_spliteado[0]
+        parametros = None
+
+        if len(cmd_spliteado) > 1:
+            parametros = cmd_spliteado[1:len(cmd_spliteado)]
+
+        if comando == "listar_operaciones": lib.listar_operaciones(comandos)
+
+        elif comando in comandos:
+            ejecutar_comando(grafo, comando, parametros)
+                #hay_error = True
+        
+        #if hay_error: print("Error en comando {}".format(comando)) 
+        #NO ESPECIFICA SI HAY QUE IMPRIMIR UN ERROR GENERAL.
+
+        linea = sys.stdin.readline()
+
+
+def main():
+
+    grafo = Grafo()
+    ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Aeropuertos
+    vuelos = set() # Guardo en un 'conjunto' los vuelos por código asi accedo en O(1)
+    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones"]
+
+    if len(sys.argv) < 3:
+        print("Cantidad de argumentos inválida") # Hay que imprimirlo?
+    
+    else:
+        procesar_datos(grafo, ciudades, vuelos, sys.argv[1], sys.argv[2])
+        procesar_entrada(grafo, comandos)
+    
+    
+    '''for v in grafo:
+       print(v)
+
+    for ciudad in ciudades:
+        print(ciudad)
+
+    for vuelo in vuelos:
+        vuelo.imprimir_datos()
+
+    
+    PRUEBAS QUE SE HAYAN CARGADO LOS DATOS CORRECTAMENTE
+    '''
+main()

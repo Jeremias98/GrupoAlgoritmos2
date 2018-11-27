@@ -1,0 +1,4 @@
+listar_operaciones
+que debe pasar?
+camino_mas parametro_1 parametro_2 parametro_3
+si pongo otra cosa debe imprimir error?

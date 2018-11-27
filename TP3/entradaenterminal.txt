@@ -1,0 +1,2 @@
+python3 flycombi.py aeropuertos.csv vuelos.csv < entrada.txt
+
