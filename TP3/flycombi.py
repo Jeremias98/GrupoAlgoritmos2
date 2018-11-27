@@ -108,7 +108,15 @@ def main():
         procesar_entrada(grafo, comandos)
     
     
-    '''for v in grafo:
+    '''
+    v = grafo.get_vertice()
+    print(v)
+
+    for w in grafo.adyacentes(v):
+        vuelo = grafo.get_peso(v,w)
+        vuelo.imprimir_datos()
+
+    for v in grafo:
        print(v)
 
     for ciudad in ciudades:
