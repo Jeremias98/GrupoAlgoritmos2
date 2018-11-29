@@ -43,7 +43,7 @@ def procesar_datos(grafo, ciudades, vuelos, aeropuertos_csv, vuelos_csv):
             ciudades[ciudad] = []
 
         aeropuerto = Aeropuerto(fila[1], fila[2], fila[3])
-        ciudades[ciudad].append(aeropuerto)
+        ciudades[ciudad].append(aeropuerto.codigo)
 
         grafo.agregar_vertice(aeropuerto.codigo)
 
@@ -56,22 +56,14 @@ def procesar_datos(grafo, ciudades, vuelos, aeropuertos_csv, vuelos_csv):
         grafo.agregar_arista(vuelo.cod_origen, vuelo.cod_destino, vuelo)
 
 
-def ejecutar_comando(grafo, comando, parametros):
-
-    if comando == "camino_mas" and len(parametros) == 3:
-        return lib.camino_mas(grafo, parametros[0], parametros[1], parametros[2], ciudades)
-
-    return False
-
-
-def procesar_entrada(grafo, comandos):
+def procesar_entrada(grafo, comandos, ciudades):
 
     print("FlyComby >> ", end="", flush=True)  #Se debe imprimir el encabezado?
 
     linea = sys.stdin.readline()
     while linea:
 
-        #hay_error = False
+        hay_error = False
         linea = linea[:-1]
 
         cmd_spliteado = linea.split(" ", 1)
@@ -81,21 +73,45 @@ def procesar_entrada(grafo, comandos):
         if len(cmd_spliteado) > 1:
             #parametros = cmd_spliteado[1:len(cmd_spliteado)]
             parametros = cmd_spliteado[1].split(",")
-        if comando == "listar_operaciones": lib.listar_operaciones(comandos)
+        if comando == "listar_operaciones": listar_operaciones(comandos)
 
         elif comando in comandos:
-            if not ejecutar_comando(grafo, comando, parametros): print("ERROR")
+            if not ejecutar_comando(grafo, comando, parametros, ciudades): hay_error = True
 
-        #if hay_error: print("Error en comando {}".format(comando))
+        if hay_error: print("Error en comando {}".format(comando))
         #NO ESPECIFICA SI HAY QUE IMPRIMIR UN ERROR GENERAL.
 
         linea = sys.stdin.readline()
 
-ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Aeropuertos
+
+def listar_operaciones(comandos):
+    for comando in comandos:
+        print(comando)
+
+def impresion_estandar(l_aeropuertos):
+    result = ""
+
+    for aeropuerto in l_aeropuertos:
+        result += aeropuerto + " -> "
+    
+    print(result[:-4])
+
+def ejecutar_comando(grafo, comando, parametros, ciudades):
+
+    if comando == "camino_escalas" and len(parametros) == 2:
+        impresion_estandar(lib.camino_minimo_escalas(grafo, parametros[0], parametros[1], ciudades))
+        return True
+
+    if comando == "camino_mas" and len(parametros) == 3:
+        return lib.camino_mas(grafo, parametros[0], parametros[1], parametros[2], ciudades)
+
+    return False
+
 
 def main():
 
     grafo = Grafo()
+    ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Aeropuertos
     vuelos = set() # Guardo en un 'conjunto' los vuelos por código asi accedo en O(1)
     comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones"]
 
@@ -104,27 +120,30 @@ def main():
 
     else:
         procesar_datos(grafo, ciudades, vuelos, sys.argv[1], sys.argv[2])
-        procesar_entrada(grafo, comandos)
+        procesar_entrada(grafo, comandos, ciudades)
 
 
+    
     '''
-    v = grafo.get_vertice()
+    v = grafo.get_vertice()         # VERTICE RANDOM
     print(v)
 
-    for w in grafo.adyacentes(v):
+    for w in grafo.adyacentes(v):   # VUELOS DEL VERTICE (AIP) RANDOM
         vuelo = grafo.get_peso(v,w)
         vuelo.imprimir_datos()
 
-    for v in grafo:
+    for v in grafo:                 # IMPRIME TODOS AIP
        print(v)
 
-    for ciudad in ciudades:
+    for ciudad in ciudades:         # IMPRIME TODAS LAS CIUDADES y SUS AIP
         print(ciudad)
+        print(ciudades[ciudad])
 
-    for vuelo in vuelos:
+    for vuelo in vuelos:            # IMPRIME TODOS LOS VUELOS
         vuelo.imprimir_datos()
 
 
-    PRUEBAS QUE SE HAYAN CARGADO LOS DATOS CORRECTAMENTE
+    #PRUEBAS QUE SE HAYAN CARGADO LOS DATOS CORRECTAMENTE
     '''
+
 main()
