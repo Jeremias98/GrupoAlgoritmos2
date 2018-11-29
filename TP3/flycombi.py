@@ -93,7 +93,7 @@ def impresion_estandar(l_aeropuertos):
 
     for aeropuerto in l_aeropuertos:
         result += aeropuerto + " -> "
-    
+
     print(result[:-4])
 
 def ejecutar_comando(grafo, comando, parametros, ciudades):
@@ -104,6 +104,9 @@ def ejecutar_comando(grafo, comando, parametros, ciudades):
 
     if comando == "camino_mas" and len(parametros) == 3:
         return lib.camino_mas(grafo, parametros[0], parametros[1], parametros[2], ciudades)
+
+    if comando == "centralidad" and len(parametros) == 1:
+        return lib.centralidad(grafo, parametros[0])
 
     return False
 
@@ -123,7 +126,7 @@ def main():
         procesar_entrada(grafo, comandos, ciudades)
 
 
-    
+
     '''
     v = grafo.get_vertice()         # VERTICE RANDOM
     print(v)

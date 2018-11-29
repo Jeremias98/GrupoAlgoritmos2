@@ -1,5 +1,6 @@
 from collections import deque
 from clasesflycombi import Pila, Cola
+import operator
 
 #----------------------------------------------------------------------------------------
 tipos_camino = ["barato", "rapido"]
@@ -23,11 +24,51 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades):
         print(' -> '.join(camino_minimo))
 
         return True
+#----------------------------------------------------------------------------------------
+def ordenar_vertices(dist):
+    pepe = dist.copy()
+    dist_ordenado = sorted(pepe.items(),key = operator.itemgetter(1),reverse = True)
+    return dist_ordenado
+
+def centralidad(grafo, k):
+
+    importantes = _centralidad(grafo, k)
+    print(', '.join(importantes))
+
+    return True
+
+def _centralidad(grafo, k):
+
+    tope = int(k)
+    cent = {} # Inicializo la centralidad
+    for v in grafo: cent[v] = 0
+
+    for v in grafo:
+        padre, dist = dijkstra(grafo,"rapido", v, None)
+        cent_aux = {}
+        for w in grafo: cent_aux[w] = 0
+        vertices_ordenados = ordenar_vertices(dist)
+        for (u,v) in vertices_ordenados:
+            if not padre[u]: continue
+            cent_aux[padre[u]] += 1 + cent_aux[u]
+        for w in grafo:
+            if w == v: continue
+            cent[w] += cent_aux[w]
+
+    k_centrales = ordenar_vertices(cent)
+    lista_centrales = []
+    cont = 0
+    for v,w in k_centrales:
+        cont += 1
+        lista_centrales.append(v)
+        if cont == tope: break
+
+    return lista_centrales
 
 #----------------------------------------------------------------------------------------
 def dijkstra(grafo, tipo, origen, destino):
 
-    if origen not in grafo.vertices() or destino not in grafo.vertices():
+    if origen not in grafo.vertices():
         return []
 
     # Mi infinito
@@ -37,6 +78,8 @@ def dijkstra(grafo, tipo, origen, destino):
     camino = { vertice: None for vertice in grafo.vertices() } # Guardo el camino que voy creando
     distancias[origen] = 0
     vertices = grafo.vertices().copy()
+    padre = {}
+    padre[origen] = None
 
     while vertices:
         # Obtiene el minimo, es como si fuera un heap de minimos
@@ -54,14 +97,19 @@ def dijkstra(grafo, tipo, origen, destino):
             if ruta_alternativa < distancias[adyacente]:
                 distancias[adyacente] = ruta_alternativa
                 camino[adyacente] = vertice_actual
+                padre[adyacente] = vertice_actual
 
     cola = deque()
-    vertice_actual = destino
-    while camino[vertice_actual] is not None:
-        cola.appendleft(vertice_actual)
-        vertice_actual = camino[vertice_actual]
-    if cola:
-        cola.appendleft(vertice_actual)
+
+    if destino:
+        actual = destino
+        while camino[actual] is not None:
+            cola.appendleft(actual)
+            actual = camino[actual]
+        if cola:
+            cola.appendleft(actual)
+    else:
+        return padre, distancias
 
     return list(cola)
 

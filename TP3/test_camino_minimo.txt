@@ -1,7 +1,0 @@
-camino_mas rapido,Albuquerque,New York
-camino_mas rapido,San Diego,New York
-camino_mas barato,San Diego,New York
-camino_mas pepe,San Diego,New York
-camino_mas pepe,San Miguel,New York
-camino_mas pepe,San Diego,Pilar
-camino_mas pepe,San Miguel,Pilar
