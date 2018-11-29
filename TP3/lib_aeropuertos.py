@@ -16,7 +16,7 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades):
 
         for aep_desde in aeps_desde:
             for aep_hasta in aeps_hasta:
-                camino = dijkstra(grafo, tipo, aep_desde.codigo, aep_hasta.codigo)
+                camino = dijkstra(grafo, tipo, aep_desde, aep_hasta)
                 if len(camino) < len(camino_minimo) or len(camino_minimo) == 0:
                     camino_minimo = camino
 
@@ -71,7 +71,7 @@ def reconstruir_camino(origen, destino, padre):
 	con los vertices que componen el camino en orden.'''
 	camino = []
 	actual = destino
-	
+
 	while actual:
 		camino.insert(0, actual)
 		actual = padre[actual]  # Cuando itere el origen el padre es None
@@ -107,7 +107,7 @@ def _camino_minimo_escalas(grafo, origen, destino):
 
 #-----------------------------------------------------------------------------------------
 def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades):
-	'''Dado una ciudad de origen y otra de destino, devuelve una lista de aeropuertos de camino minimo.''' 
+	'''Dado una ciudad de origen y otra de destino, devuelve una lista de aeropuertos de camino minimo.'''
 	aips_origen = ciudades[ciudad_origen]
 	aips_destino = ciudades[ciudad_destino]
 
@@ -115,7 +115,7 @@ def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades):
 
 	for origen in aips_origen:
 		for destino in aips_destino:
-			
+
 			camino = _camino_minimo_escalas(grafo, origen, destino)
 			if len(camino) < len(camino_resul) or len(camino_resul) == 0:
 				camino_resul = camino
