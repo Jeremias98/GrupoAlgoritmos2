@@ -1,6 +1,7 @@
 from collections import deque
 from clasesflycombi import Pila, Cola
 import operator
+from heapq import heappush, heappop
 
 def impresion_estandar(l_aeropuertos):
     result = ""
@@ -139,14 +140,12 @@ def dijkstra2(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
     padre = {}
     dist[origen] = 0
     padre[origen] = None
-    vertices = grafo.vertices()
-    
-    while vertices:
-        # Obtiene el minimo, es como si fuera un heap de minimos
-        v = min(vertices, key=lambda vertice: dist[vertice])
-        vertices.remove(v)
+    heap = []
+    heappush(heap, (dist[origen], origen))
 
-        if dist[v] == inf: break  # Si el grafo no es conexo
+    while heap:
+        # Obtiene el minimo, es como si fuera un heap de minimos
+        priority, v =  heappop(heap)
         if destino == v: return reconstruir_camino(origen, destino, padre)
         
         for w in grafo.adyacentes(v):
@@ -158,6 +157,7 @@ def dijkstra2(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
             if dist[v] + peso < dist[w]:
                 dist[w] = dist[v] + peso
                 padre[w] = v
+                heappush(heap, (dist[w], w))
 
     return padre, dist
 
