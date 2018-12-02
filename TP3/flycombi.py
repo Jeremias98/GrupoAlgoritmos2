@@ -31,7 +31,7 @@ class Vuelo:
         print("{} {} {} {} {}".format(self.cod_origen, self.cod_destino, self.tiempo_promedio, self.precio, self.cant_vuelos_entre_aeropuertos))
 
 
-def procesar_datos(grafo, ciudades, vuelos, aeropuertos_csv, vuelos_csv):
+def procesar_datos(grafo, ciudades, vuelos, aeropuertos, aeropuertos_csv, vuelos_csv):
 
     file_aeropuertos = open(aeropuertos_csv, newline='')
     file_vuelos = open(vuelos_csv, "r")
@@ -44,6 +44,7 @@ def procesar_datos(grafo, ciudades, vuelos, aeropuertos_csv, vuelos_csv):
 
         aeropuerto = Aeropuerto(fila[1], fila[2], fila[3])
         ciudades[ciudad].append(aeropuerto.codigo)
+        aeropuertos[aeropuerto.codigo] = aeropuerto
 
         grafo.agregar_vertice(aeropuerto.codigo)
 
@@ -55,8 +56,11 @@ def procesar_datos(grafo, ciudades, vuelos, aeropuertos_csv, vuelos_csv):
 
         grafo.agregar_arista(vuelo.cod_origen, vuelo.cod_destino, vuelo)
 
+    file_aeropuertos.close()
+    file_vuelos.close()
 
-def procesar_entrada(grafo, comandos, ciudades):
+
+def procesar_entrada(grafo, comandos, ciudades, ult_rec, aeropuertos):
 
     print("FlyComby >> ", end="", flush=True)  #Se debe imprimir el encabezado?
 
@@ -76,7 +80,7 @@ def procesar_entrada(grafo, comandos, ciudades):
         if comando == "listar_operaciones": listar_operaciones(comandos)
 
         elif comando in comandos:
-            if not ejecutar_comando(grafo, comando, parametros, ciudades): hay_error = True
+            if not ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos): hay_error = True
 
         if hay_error: print("Error en comando {}".format(comando))
         #NO ESPECIFICA SI HAY QUE IMPRIMIR UN ERROR GENERAL.
@@ -88,33 +92,37 @@ def listar_operaciones(comandos):
     for comando in comandos:
         print(comando)
 
-def ejecutar_comando(grafo, comando, parametros, ciudades):
+def ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos):
+
+    if comando == "exportar_kml" and len(parametros) == 1:
+        return lib.exportar_kml(parametros[0], ult_rec, aeropuertos)
 
     if comando == "camino_escalas" and len(parametros) == 2:
-        return lib.camino_minimo_escalas(grafo, parametros[0], parametros[1], ciudades)
+        return lib.camino_minimo_escalas(grafo, parametros[0], parametros[1], ciudades, ult_rec)
 
     if comando == "camino_mas" and len(parametros) == 3:
-        return lib.camino_mas(grafo, parametros[0], parametros[1], parametros[2], ciudades)
+        return lib.camino_mas(grafo, parametros[0], parametros[1], parametros[2], ciudades, ult_rec)
 
     if comando == "centralidad" and len(parametros) == 1:
         return lib.centralidad(grafo, parametros[0])
 
     return False
 
-
 def main():
 
     grafo = Grafo()
-    ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Aeropuertos
+    ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Cod. Aeropuertos
+    aeropuertos = {} # # Guardo en un 'hash' los cod de aeropuerto asi accedo en O(1) - Claves = Class Aeropuerto
     vuelos = set() # Guardo en un 'conjunto' los vuelos por código asi accedo en O(1)
-    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones"]
+    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones", "exportar_kml"]
+    ultimo_recorrido = []
 
     if len(sys.argv) < 3:
         print("Cantidad de argumentos inválida") # Hay que imprimirlo?
 
     else:
-        procesar_datos(grafo, ciudades, vuelos, sys.argv[1], sys.argv[2])
-        procesar_entrada(grafo, comandos, ciudades)
+        procesar_datos(grafo, ciudades, vuelos, aeropuertos, sys.argv[1], sys.argv[2])
+        procesar_entrada(grafo, comandos, ciudades, ultimo_recorrido, aeropuertos)
 
 
 

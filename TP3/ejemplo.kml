@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <Placemark>
+            <name>CLT</name>
+            <Point>
+                <coordinates>-80.94313, 35.21401</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>ORD</name>
+            <Point>
+                <coordinates>-87.90446, 41.97960</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>COD</name>
+            <Point>
+                <coordinates>-109.02380, 44.52019</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-80.94313, 35.21401 -87.90446, 41.97960</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-87.90446, 41.97960 -109.02380, 44.52019</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

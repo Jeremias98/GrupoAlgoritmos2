@@ -12,7 +12,7 @@ def impresion_estandar(l_aeropuertos):
 
 #----------------------------------------------------------------------------------------
 tipos_camino = ["barato", "rapido"]
-def camino_mas(grafo, tipo, desde, hasta, ciudades):
+def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
 
         if desde not in ciudades or hasta not in ciudades: return False
 
@@ -30,6 +30,10 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades):
                     camino_minimo = camino
 
         impresion_estandar(camino_minimo)
+        
+        while ult_rec: ult_rec.pop()
+        for aep in camino_minimo:
+            ult_rec.append(aep)
         return True
 
 #----------------------------------------------------------------------------------------
@@ -198,7 +202,7 @@ def bfs(grafo, origen, destino):
     return padre, dist
 
 #-----------------------------------------------------------------------------------------
-def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades):
+def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades, ult_rec):
     '''Dado una ciudad de origen y otra de destino, devuelve una lista de aeropuertos de camino minimo.'''
     if ciudad_origen not in ciudades: return False
     if ciudad_destino not in ciudades: return False
@@ -216,4 +220,43 @@ def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades):
                 camino_resul = camino
 
     impresion_estandar(camino_resul)
+    
+    while ult_rec: ult_rec.pop()
+    for aep in camino_resul:
+        ult_rec.append(aep)
+    return True
+
+#----------------------------------------------------------------------------------------------
+def exportar_kml(ruta, l_cod_aeps, aeropuertos):
+
+    l_aeps = []
+    for aeropuerto in l_cod_aeps:
+        l_aeps.append(aeropuertos[aeropuerto])
+
+    f = open(ruta, 'w')
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
+    f.write("    <Document>\n")
+    
+    for aep in l_aeps:
+        f.write("        <Placemark>\n")
+        f.write("            <name>{}</name>\n".format(aep.codigo))
+        f.write("            <Point>\n")
+        f.write("                <coordinates>{}, {}</coordinates>\n".format(aep.longitud, aep.latitud))
+        f.write("            </Point>\n")
+        f.write("        </Placemark>\n")
+
+    for i in range(0, len(l_aeps) - 1):
+        f.write("        <Placemark>\n")
+        f.write("            <LineString>\n")
+        f.write("                <coordinates>{}, {} {}, {}</coordinates>\n".format(
+        l_aeps[i].longitud, l_aeps[i].latitud, l_aeps[i+1].longitud, l_aeps[i+1].latitud))
+        f.write("            </LineString>\n")
+        f.write("        </Placemark>\n")
+
+    f.write("    </Document>\n")
+    f.write("</kml>\n")
+    f.close()
+
+    print("OK")
     return True

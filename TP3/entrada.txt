@@ -7,4 +7,5 @@ camino_mas rapido,San Diego,New York
 camino_mas barato,San Diego,New York
 camino_mas pepe,San Diego,New York
 centralidad 5
-
+camino_escalas Charlotte,Cody
+exportar_kml ejemplo.kml
