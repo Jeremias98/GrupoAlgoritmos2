@@ -88,19 +88,10 @@ def listar_operaciones(comandos):
     for comando in comandos:
         print(comando)
 
-def impresion_estandar(l_aeropuertos):
-    result = ""
-
-    for aeropuerto in l_aeropuertos:
-        result += aeropuerto + " -> "
-
-    print(result[:-4])
-
 def ejecutar_comando(grafo, comando, parametros, ciudades):
 
     if comando == "camino_escalas" and len(parametros) == 2:
-        impresion_estandar(lib.camino_minimo_escalas(grafo, parametros[0], parametros[1], ciudades))
-        return True
+        return lib.camino_minimo_escalas(grafo, parametros[0], parametros[1], ciudades)
 
     if comando == "camino_mas" and len(parametros) == 3:
         return lib.camino_mas(grafo, parametros[0], parametros[1], parametros[2], ciudades)
