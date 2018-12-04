@@ -1,1 +1,1 @@
-centralidad 5
+centralidad 7

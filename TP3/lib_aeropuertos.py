@@ -26,12 +26,12 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
 
         for aep_desde in aeps_desde:
             for aep_hasta in aeps_hasta:
-                camino = dijkstra2(grafo, tipo, aep_desde, aep_hasta)
+                camino = dijkstra(grafo, tipo, aep_desde, aep_hasta)
                 if len(camino) < len(camino_minimo) or len(camino_minimo) == 0:
                     camino_minimo = camino
 
         impresion_estandar(camino_minimo)
-        
+
         while ult_rec: ult_rec.pop()
         for aep in camino_minimo:
             ult_rec.append(aep)
@@ -39,30 +39,30 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
 
 #----------------------------------------------------------------------------------------
 def ordenar_vertices(dicc):
-    items_ord = sorted(dicc.items(),key = operator.itemgetter(1),reverse = True) 
+    items_ord = sorted(dicc.items(),key = operator.itemgetter(1),reverse = True)
     vertices_ord = []
     for v, valor in items_ord: vertices_ord.append(v)
 
     return vertices_ord
 
 def centralidad(grafo, k):
-    
-    importantes = _centralidad(grafo, k)
-    print(', '.join(importantes))
+
+    centrales = betweness_centrality(grafo, k)
+    print(', '.join(centrales))
 
     return True
 
-def _centralidad(grafo, k):
+def betweness_centrality(grafo, k):
 
     tope = int(k)
     cent = {} # Inicializo la centralidad
     for v in grafo: cent[v] = 0
 
     for v in grafo:
-        padre, dist = dijkstra2(grafo, "rapido", v, None) 
+        padre, dist = dijkstra(grafo, "rapido", v, None)
         cent_aux = {}
         for w in grafo: cent_aux[w] = 0
-        
+
         vertices_ordenados = ordenar_vertices(dist)
         for w in vertices_ordenados:
             if w == v: continue
@@ -83,55 +83,7 @@ def _centralidad(grafo, k):
     return lista_centrales
 
 #----------------------------------------------------------------------------------------
-def dijkstra(grafo, tipo, origen, destino):
-
-    if origen not in grafo.vertices():
-        return []
-
-    # Mi infinito
-    inf = float('inf')
-
-    distancias = {vertice: inf for vertice in grafo.vertices() } # Guardo las distancias
-    camino = { vertice: None for vertice in grafo.vertices() } # Guardo el camino que voy creando
-    distancias[origen] = 0
-    vertices = grafo.vertices().copy()
-    padre = {}
-    padre[origen] = None
-
-    while vertices:
-        # Obtiene el minimo, es como si fuera un heap de minimos
-        vertice_actual = min(
-            vertices, key=lambda vertice: distancias[vertice])
-
-        vertices.remove(vertice_actual)
-
-        if distancias[vertice_actual] == inf:
-            break
-        for adyacente in grafo.adyacentes(vertice_actual):
-            peso_arista = grafo.get_peso(vertice_actual, adyacente)
-            peso = int(peso_arista.precio) if tipo == tipos_camino[0] else int(peso_arista.tiempo_promedio)
-            ruta_alternativa = distancias[vertice_actual] + peso
-            if ruta_alternativa < distancias[adyacente]:
-                distancias[adyacente] = ruta_alternativa
-                camino[adyacente] = vertice_actual
-                padre[adyacente] = vertice_actual
-
-    cola = deque()
-
-    if destino:
-        actual = destino
-        while camino[actual] is not None:
-            cola.appendleft(actual)
-            actual = camino[actual]
-        if cola:
-            cola.appendleft(actual)
-    else:
-        return padre, distancias
-
-    return list(cola)
-
-#--------------------------------------------------------------------------------------------------
-def dijkstra2(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
+def dijkstra(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
     ''' Devuelve una lista con los aeropuertos de camino minimo según el tipo entre
     origen y destino. Si no existe el destino o es None, devuelve la tupla (padre, dist).'''
     inf = float('inf')
@@ -147,13 +99,13 @@ def dijkstra2(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
         # Obtiene el minimo, es como si fuera un heap de minimos
         priority, v =  heappop(heap)
         if destino == v: return reconstruir_camino(origen, destino, padre)
-        
+
         for w in grafo.adyacentes(v):
             peso_arista = grafo.get_peso(v, w)
-            if tipo == tipos_camino[0]: peso = int(peso_arista.precio) 
+            if tipo == tipos_camino[0]: peso = int(peso_arista.precio)
             elif tipo == tipos_camino[1]: peso = int(peso_arista.tiempo_promedio)
             else: peso = int(peso_arista.cant_vuelos_entre_aeropuertos)
-            
+
             if dist[v] + peso < dist[w]:
                 dist[w] = dist[v] + peso
                 padre[w] = v
@@ -206,7 +158,7 @@ def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades, ult_re
     '''Dado una ciudad de origen y otra de destino, devuelve una lista de aeropuertos de camino minimo.'''
     if ciudad_origen not in ciudades: return False
     if ciudad_destino not in ciudades: return False
-    
+
     aips_origen = ciudades[ciudad_origen]
     aips_destino = ciudades[ciudad_destino]
 
@@ -220,7 +172,7 @@ def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades, ult_re
                 camino_resul = camino
 
     impresion_estandar(camino_resul)
-    
+
     while ult_rec: ult_rec.pop()
     for aep in camino_resul:
         ult_rec.append(aep)
@@ -237,7 +189,7 @@ def exportar_kml(ruta, l_cod_aeps, aeropuertos):
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
     f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
     f.write("    <Document>\n")
-    
+
     for aep in l_aeps:
         f.write("        <Placemark>\n")
         f.write("            <name>{}</name>\n".format(aep.codigo))
