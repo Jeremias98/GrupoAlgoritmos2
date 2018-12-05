@@ -3,10 +3,6 @@ import lib_aeropuertos as lib
 import sys
 import csv
 
-#class Ciudad:
-#    def __init__(self, nombre, aeropuertos):
-#        self.nombre = nombre
-#        self.aeropuertos = aeropuertos
 
 class Aeropuerto:
 
@@ -94,6 +90,9 @@ def listar_operaciones(comandos):
 
 def ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos):
 
+    if comando == "vacaciones" and len(parametros) == 2:
+        return lib.vacaciones(grafo, parametros[0], int(parametros[1]), ciudades, ult_rec)   
+
     if comando == "exportar_kml" and len(parametros) == 1:
         return lib.exportar_kml(parametros[0], ult_rec, aeropuertos)
 
@@ -131,27 +130,5 @@ def main():
         procesar_datos(grafo, ciudades, vuelos, aeropuertos, sys.argv[1], sys.argv[2])
         procesar_entrada(grafo, comandos, ciudades, ultimo_recorrido, aeropuertos)
 
-
-
-    ''' 
-    v = grafo.get_vertice()         # VERTICE RANDOM
-    print(v)
-
-    for w in grafo.adyacentes(v):   # VUELOS DEL VERTICE (AIP) RANDOM
-        vuelo = grafo.get_peso(v,w)
-        vuelo.imprimir_datos()
-
-    for v in grafo:                 # IMPRIME TODOS AIP
-       print(v)
-
-    for ciudad in ciudades:         # IMPRIME TODAS LAS CIUDADES y SUS AIP
-        print(ciudad)
-        print(ciudades[ciudad])
-
-    for vuelo in vuelos:            # IMPRIME TODOS LOS VUELOS
-        print(vuelo)
-
-    #PRUEBAS QUE SE HAYAN CARGADO LOS DATOS CORRECTAMENTE
-    '''
 
 main()

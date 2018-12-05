@@ -7,6 +7,7 @@ camino_mas rapido,San Diego,New York
 camino_mas barato,San Diego,New York
 camino_mas pepe,San Diego,New York
 centralidad 5
-camino_escalas Charlotte,Cody
-exportar_kml ejemplo.kml
 nueva_aerolinea bAIRos.csv
+vacaciones San Diego,6
+vacaciones New York,15
+exportar_kml ejemplo.kml

@@ -294,3 +294,37 @@ def exportar_kml(ruta, l_cod_aeps, aeropuertos):
 
     print("OK")
     return True
+
+#----------------------------------------------------------------------------------------------------
+def _vacaciones(grafo, v, n, recorrido):
+    if n == 0: return recorrido
+
+    for w in grafo.adyacentes(v):
+        if (w == recorrido[0] and n == 1) or (w not in recorrido and n > 1):
+            recorrido.append(w)
+            return _vacaciones(grafo, w, n-1, recorrido)
+
+    return []
+
+def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
+    
+    aips_origen = ciudades[ciudad_origen]
+
+    if n <= 1: return False
+    
+    recorrido = []
+    for origen in aips_origen:
+        for w in grafo.adyacentes(origen):
+                
+                recorrido.append(origen)
+                recorrido = _vacaciones(grafo, w, n, recorrido)
+                if recorrido: break
+
+    if recorrido: 
+        impresion_estandar(recorrido)
+        while ult_rec: ult_rec.pop()
+        for aep in recorrido:
+            ult_rec.append(aep)
+    
+    else: print("No se encontro recorrido recorrido")
+    return True
