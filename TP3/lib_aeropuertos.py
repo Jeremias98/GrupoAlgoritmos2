@@ -2,6 +2,7 @@ from collections import deque
 from clasesflycombi import Pila, Cola
 import operator
 from heapq import heappush, heappop
+from clasesflycombi import Grafo
 
 def impresion_estandar(l_aeropuertos):
     result = ""
@@ -10,6 +11,18 @@ def impresion_estandar(l_aeropuertos):
         result += aeropuerto + " -> "
 
     print(result[:-4])
+#
+def recorrer_mundo(grafo, ciudad, ciudades):
+
+    if ciudad not in ciudades: return False
+
+    aeps = ciudades[ciudad]
+
+    # Tomo el primer aeropuerto arbitrariamente
+    mst = prim(grafo, aeps[0])
+    peso_total = 0
+
+    return True
 
 #----------------------------------------------------------------------------------------
 tipos_camino = ["barato", "rapido"]
@@ -112,6 +125,33 @@ def dijkstra(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
                 heappush(heap, (dist[w], w))
 
     return padre, dist
+
+#-------------------------------------------------------------------------------------------
+def prim(grafo, vertice_inicial):
+
+    visitados = set()
+    visitados.add(vertice_inicial)
+
+    heap = []
+
+    for w in grafo.adyacentes(vertice_inicial):
+        heappush(heap, (vertice_inicial, w, grafo.get_peso(vertice_inicial, w)))
+    arbol = Grafo()
+
+    for v in grafo.vertices():
+        arbol.agregar_vertice(v)
+
+    while heap:
+        (v,w,p) = heappop(heap)
+        if w in visitados: continue
+        arbol.agregar_arista(v,w,p)
+        visitados.add(w)
+        for x in grafo.adyacentes(w):
+            if x not in visitados:
+                heappush(heap, (w,x, grafo.get_peso(w, x)))
+
+    return arbol
+
 
 #-------------------------------------------------------------------------------------------
 def reconstruir_camino(origen, destino, padre):

@@ -106,6 +106,9 @@ def ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos)
     if comando == "centralidad" and len(parametros) == 1:
         return lib.centralidad(grafo, parametros[0])
 
+    if comando == "recorrer_mundo" and len(parametros) == 1:
+        return lib.recorrer_mundo(grafo, parametros[0], ciudades)
+
     return False
 
 def main():
@@ -114,7 +117,7 @@ def main():
     ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Cod. Aeropuertos
     aeropuertos = {} # # Guardo en un 'hash' los cod de aeropuerto asi accedo en O(1) - Claves = Class Aeropuerto
     vuelos = set() # Guardo en un 'conjunto' los vuelos por código asi accedo en O(1)
-    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones", "exportar_kml"]
+    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones", "exportar_kml", "recorrer_mundo"]
     ultimo_recorrido = []
 
     if len(sys.argv) < 3:

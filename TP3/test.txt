@@ -1,1 +1,1 @@
-centralidad 7
+recorrer_mundo Gotica
