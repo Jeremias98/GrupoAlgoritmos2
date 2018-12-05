@@ -3,6 +3,7 @@ from clasesflycombi import Pila, Cola
 import operator
 from heapq import heappush, heappop
 from clasesflycombi import Grafo
+import csv
 
 def impresion_estandar(l_aeropuertos):
     result = ""
@@ -152,6 +153,47 @@ def prim(grafo, vertice_inicial):
 
     return arbol
 
+#-------------------------------------------------------------------------------------------
+def prim2(grafo):
+
+    vertice = grafo.get_vertice()
+    visitados = set()
+    visitados.add(vertice)
+
+    heap = []
+    for w in grafo.adyacentes(vertice):
+        heappush(heap, (int(grafo.get_peso(vertice, w).precio), (vertice, w)))
+    
+    arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
+    
+    while heap:
+        priority, (v,w) = heappop(heap)
+        if w in visitados: continue
+        arbol.agregar_arista(v, w, grafo.get_peso(v,w))
+        visitados.add(w)
+        for x in grafo.adyacentes(w):
+            if x not in visitados:
+                heappush(heap, (int(grafo.get_peso(w,x).precio), (w,x)))
+
+    return arbol
+
+#-------------------------------------------------------------------------------------------
+def nueva_aerolinea(grafo, ruta):
+
+    arbol = prim2(grafo)
+    vuelos_agregados = set()
+
+    with open(ruta, 'w') as file:
+        writer = csv.writer(file, delimiter= ',')
+        for aip_i in arbol:
+            for aip_j in arbol.adyacentes(aip_i):
+                
+                vuelo = arbol.get_peso(aip_i, aip_j)
+                if vuelo not in vuelos_agregados:
+                    writer.writerow([aip_i, aip_j, vuelo.tiempo_promedio, vuelo.precio, vuelo.cant_vuelos_entre_aeropuertos])
+                    vuelos_agregados.add(vuelo)
+    print("OK")
+    return True
 
 #-------------------------------------------------------------------------------------------
 def reconstruir_camino(origen, destino, padre):

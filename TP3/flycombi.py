@@ -109,6 +109,9 @@ def ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos)
     if comando == "recorrer_mundo" and len(parametros) == 1:
         return lib.recorrer_mundo(grafo, parametros[0], ciudades)
 
+    if comando == "nueva_aerolinea" and len(parametros) == 1:
+        return lib.nueva_aerolinea(grafo, parametros[0])
+
     return False
 
 def main():
@@ -117,9 +120,10 @@ def main():
     ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Cod. Aeropuertos
     aeropuertos = {} # # Guardo en un 'hash' los cod de aeropuerto asi accedo en O(1) - Claves = Class Aeropuerto
     vuelos = set() # Guardo en un 'conjunto' los vuelos por código asi accedo en O(1)
-    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones", "exportar_kml", "recorrer_mundo"]
+    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", 
+    "vacaciones", "exportar_kml", "recorrer_mundo", "nueva_aerolinea"]
     ultimo_recorrido = []
-
+    
     if len(sys.argv) < 3:
         print("Cantidad de argumentos inválida") # Hay que imprimirlo?
 
@@ -129,7 +133,7 @@ def main():
 
 
 
-    '''
+    ''' 
     v = grafo.get_vertice()         # VERTICE RANDOM
     print(v)
 
@@ -145,8 +149,7 @@ def main():
         print(ciudades[ciudad])
 
     for vuelo in vuelos:            # IMPRIME TODOS LOS VUELOS
-        vuelo.imprimir_datos()
-
+        print(vuelo)
 
     #PRUEBAS QUE SE HAYAN CARGADO LOS DATOS CORRECTAMENTE
     '''

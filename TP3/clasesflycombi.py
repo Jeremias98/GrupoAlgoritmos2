@@ -13,19 +13,20 @@ class Grafo():
         # Puedo pasarle por parámetro un diccionario de diccionarios
         # para inicializar el grafo
         if dicc == None:
-            dic = {}
+            dicc = {}
             cant = 0
         else:
             cant = contar_claves(dicc)
-        self._vertices = dic # Variable protected
+        self._vertices = dicc # Variable protected
         self.len = cant 
     
     def __iter__(self):
         return _IteradorGrafo(self)
     
     def vertices(self):
-        ''' Retorna una lista de los vértices del grafo.'''
-        return list(self._vertices.keys())
+        ''' Retorna un diccionario con los vértices del grafo con diccionarios vacíos
+        como clave.'''
+        return {vertice: {} for vertice in self._vertices}
 
     def adyacentes(self, vertice):
         ''' Retorna una lista de los vértices adyacentes al vértice dado.'''
@@ -88,7 +89,7 @@ class Grafo():
 
     def get_vertice(self):
         ''' Devuelve un vertice aleatorio.'''
-        return random.choice(self.vertices())
+        return random.choice(list(self.vertices()))
 
     def len_(self):
         '''Devuelve la cantidad de vertices del grafo.'''
@@ -99,7 +100,7 @@ class _IteradorGrafo:
 
     #Constructor iterador
     def __init__(self, grafo):
-        self.visitar = grafo.vertices()
+        self.visitar = list(grafo.vertices())
         self.actual = random.choice(self.visitar)
 
     def __next__(self):
