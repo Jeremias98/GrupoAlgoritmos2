@@ -5,6 +5,8 @@ from heapq import heappush, heappop
 from clasesflycombi import Grafo
 import csv
 
+tipos_peso = ["precio", "tiempo_promedio", "cant_vuelos_entre_aeropuertos"]
+
 def impresion_estandar(l_aeropuertos):
     result = ""
 
@@ -15,13 +17,7 @@ def impresion_estandar(l_aeropuertos):
 #
 def recorrer_mundo(grafo, ciudad, ciudades):
 
-    if ciudad not in ciudades: return False
-
-    aeps = ciudades[ciudad]
-
-    # Tomo el primer aeropuerto arbitrariamente
-    mst = prim(grafo, aeps[0])
-    peso_total = 0
+    if ciudad not in ciudades: return False	
 
     return True
 
@@ -128,59 +124,47 @@ def dijkstra(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
     return padre, dist
 
 #-------------------------------------------------------------------------------------------
-def prim(grafo, vertice_inicial):
-
-    visitados = set()
-    visitados.add(vertice_inicial)
-
-    heap = []
-
-    for w in grafo.adyacentes(vertice_inicial):
-        heappush(heap, (vertice_inicial, w, grafo.get_peso(vertice_inicial, w)))
-    arbol = Grafo()
-
-    for v in grafo.vertices():
-        arbol.agregar_vertice(v)
-
-    while heap:
-        (v,w,p) = heappop(heap)
-        if w in visitados: continue
-        arbol.agregar_arista(v,w,p)
-        visitados.add(w)
-        for x in grafo.adyacentes(w):
-            if x not in visitados:
-                heappush(heap, (w,x, grafo.get_peso(w, x)))
-
-    return arbol
-
-#-------------------------------------------------------------------------------------------
-def prim2(grafo):
-
-    vertice = grafo.get_vertice()
-    visitados = set()
-    visitados.add(vertice)
-
-    heap = []
-    for w in grafo.adyacentes(vertice):
-        heappush(heap, (int(grafo.get_peso(vertice, w).precio), (vertice, w)))
+def prim(grafo, tipo_peso):
+	
+	vertice = grafo.get_vertice()
+	visitados = set()
+	visitados.add(vertice)
+	heap = []
+	peso = 0
+	for w in grafo.adyacentes(vertice):
+		if tipo_peso == tipos_peso[0]:
+			peso = int(grafo.get_peso(vertice, w).precio)
+		elif tipo_peso == tipos_peso[1]:
+			peso = int(grafo.get_peso(vertice, w).tiempo_promedio)
+		else:
+			peso = int(grafo.get_peso(vertice, w).cant_vuelos_entre_aeropuertos)
+		
+		heappush(heap, (peso, (vertice, w)))
+		
+	arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
     
-    arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
-    
-    while heap:
-        priority, (v,w) = heappop(heap)
-        if w in visitados: continue
-        arbol.agregar_arista(v, w, grafo.get_peso(v,w))
-        visitados.add(w)
-        for x in grafo.adyacentes(w):
-            if x not in visitados:
-                heappush(heap, (int(grafo.get_peso(w,x).precio), (w,x)))
+	while heap:
+		priority, (v,w) = heappop(heap)
+		if w in visitados: continue
+		arbol.agregar_arista(v, w, grafo.get_peso(v,w))
+		visitados.add(w)
+		for x in grafo.adyacentes(w):
+			if x not in visitados:
+				if tipo_peso == tipos_peso[0]:
+					peso = int(grafo.get_peso(w, x).precio)
+				elif tipo_peso == tipos_peso[1]:
+					peso = int(grafo.get_peso(w, x).tiempo_promedio)
+				else:
+					peso = int(grafo.get_peso(w, x).cant_vuelos_entre_aeropuertos)
+				heappush(heap, (peso, (w,x)))
 
-    return arbol
+	return arbol
+	
 
 #-------------------------------------------------------------------------------------------
 def nueva_aerolinea(grafo, ruta):
 
-    arbol = prim2(grafo)
+    arbol = prim(grafo, "precio")
     vuelos_agregados = set()
 
     with open(ruta, 'w') as file:
@@ -307,6 +291,8 @@ def _vacaciones(grafo, v, n, recorrido):
     return []
 
 def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
+    
+    if ciudad_origen not in ciudades: return False
     
     aips_origen = ciudades[ciudad_origen]
 
