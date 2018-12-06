@@ -27,7 +27,7 @@ class Vuelo:
         print("{} {} {} {} {}".format(self.cod_origen, self.cod_destino, self.tiempo_promedio, self.precio, self.cant_vuelos_entre_aeropuertos))
 
 
-def procesar_datos(grafo, ciudades, vuelos, aeropuertos, aeropuertos_csv, vuelos_csv):
+def procesar_datos(grafo, ciudades, aeropuertos, aeropuertos_csv, vuelos_csv):
 
     file_aeropuertos = open(aeropuertos_csv, newline='')
     file_vuelos = open(vuelos_csv, "r")
@@ -48,7 +48,6 @@ def procesar_datos(grafo, ciudades, vuelos, aeropuertos, aeropuertos_csv, vuelos
     lector = csv.reader(file_vuelos, delimiter=',')
     for fila in lector:
         vuelo = Vuelo(fila[0], fila[1], fila[2], fila[3], fila[4])
-        vuelos.add(vuelo)
 
         grafo.agregar_arista(vuelo.cod_origen, vuelo.cod_destino, vuelo)
 
@@ -90,6 +89,9 @@ def listar_operaciones(comandos):
 
 def ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos):
 
+    if comando == "itinerario" and len(parametros) == 1:
+        return lib.itinerario_cultural(grafo, parametros[0], ciudades, ult_rec)
+
     if comando == "vacaciones" and len(parametros) == 2:
         return lib.vacaciones(grafo, parametros[0], int(parametros[1]), ciudades, ult_rec)   
 
@@ -118,16 +120,15 @@ def main():
     grafo = Grafo()
     ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Cod. Aeropuertos
     aeropuertos = {} # # Guardo en un 'hash' los cod de aeropuerto asi accedo en O(1) - Claves = Class Aeropuerto
-    vuelos = set() # Guardo en un 'conjunto' los vuelos por código asi accedo en O(1)
     comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", 
-    "vacaciones", "exportar_kml", "recorrer_mundo", "nueva_aerolinea"]
+    "vacaciones", "exportar_kml", "recorrer_mundo", "nueva_aerolinea", "itinerario"]
     ultimo_recorrido = []
     
     if len(sys.argv) < 3:
         print("Cantidad de argumentos inválida") # Hay que imprimirlo?
 
     else:
-        procesar_datos(grafo, ciudades, vuelos, aeropuertos, sys.argv[1], sys.argv[2])
+        procesar_datos(grafo, ciudades, aeropuertos, sys.argv[1], sys.argv[2])
         procesar_entrada(grafo, comandos, ciudades, ultimo_recorrido, aeropuertos)
 
 

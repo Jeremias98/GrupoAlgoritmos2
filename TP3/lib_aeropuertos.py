@@ -1,4 +1,3 @@
-from collections import deque
 from clasesflycombi import Pila, Cola
 import operator
 from heapq import heappush, heappop
@@ -8,12 +7,8 @@ import csv
 tipos_peso = ["precio", "tiempo_promedio", "cant_vuelos_entre_aeropuertos"]
 
 def impresion_estandar(l_aeropuertos):
-    result = ""
+    print(" -> ".join(l_aeropuertos))
 
-    for aeropuerto in l_aeropuertos:
-        result += aeropuerto + " -> "
-
-    print(result[:-4])
 #
 def recorrer_mundo(grafo, ciudad, ciudades):
 
@@ -93,7 +88,7 @@ def betweness_centrality(grafo, k):
     return lista_centrales
 
 #----------------------------------------------------------------------------------------
-def dijkstra(grafo, tipo, origen, destino):   #Propuesta DJKSTRA
+def dijkstra(grafo, tipo, origen, destino):
     ''' Devuelve una lista con los aeropuertos de camino minimo según el tipo entre
     origen y destino. Si no existe el destino o es None, devuelve la tupla (padre, dist).'''
     inf = float('inf')
@@ -305,7 +300,8 @@ def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
                 recorrido.append(origen)
                 recorrido = _vacaciones(grafo, w, n, recorrido)
                 if recorrido: break
-
+        if recorrido:break
+    
     if recorrido: 
         impresion_estandar(recorrido)
         while ult_rec: ult_rec.pop()
@@ -314,3 +310,41 @@ def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
     
     else: print("No se encontro recorrido recorrido")
     return True
+
+#-------------------------------------------------------------------------------------------------
+def itinerario_cultural(grafo, ruta, ciudades, ult_rec):
+
+    file = open(ruta)
+    reader_lineas = csv.reader(file, delimiter= ',')
+    ciudades_visitar = next(reader_lineas)
+
+    anteriores = {}
+    for linea in reader_lineas:
+        anteriores[linea[1]] = anteriores.get(linea[1], []) + [linea[0]]
+
+    file.close()
+    recorrido = []
+
+    while len(recorrido) < len(ciudades_visitar):  #PRIMERO CALCULO UN CAMINO VALIDO SEGUN LAS RESTRICCIONES
+        for ciudad in ciudades_visitar:
+            if ciudad in recorrido: continue
+  
+            if ciudad not in anteriores:
+                recorrido.append(ciudad)
+            else:
+                cond = True
+                for anterior in anteriores[ciudad]:
+                    if anterior not in recorrido: 
+                        cond = False
+                    
+                if cond:
+                    recorrido.append(ciudad)
+                    anteriores.pop(ciudad)  
+
+    print(', '.join(recorrido))                 #IMPRIMO CAMINO Y LE CALCULO CAMINO MINIMO DE ESCALAS A CADA DESTINO
+    
+    for i in range(len(recorrido) - 1):
+        condicion = camino_minimo_escalas(grafo, recorrido[i], recorrido[i+1], ciudades, ult_rec)
+        if condicion == False: break
+    
+    return condicion

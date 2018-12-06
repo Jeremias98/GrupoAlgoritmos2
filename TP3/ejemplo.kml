@@ -1,5 +1,176 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
     <Document>
+        <Placemark>
+            <name>JFK</name>
+            <Point>
+                <coordinates>-73.77893, 40.63975</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>AUS</name>
+            <Point>
+                <coordinates>-97.66987, 30.19453</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>LAX</name>
+            <Point>
+                <coordinates>-118.40807, 33.94254</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>ASE</name>
+            <Point>
+                <coordinates>-106.86885, 39.22316</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>DEN</name>
+            <Point>
+                <coordinates>-104.66700, 39.85841</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>AMA</name>
+            <Point>
+                <coordinates>-101.70593, 35.21937</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>DAL</name>
+            <Point>
+                <coordinates>-96.85177, 32.84711</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>ABQ</name>
+            <Point>
+                <coordinates>-106.60919, 35.04022</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>HOU</name>
+            <Point>
+                <coordinates>-95.27889, 29.64542</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>BHM</name>
+            <Point>
+                <coordinates>-86.75355, 33.56294</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>MIA</name>
+            <Point>
+                <coordinates>-80.29056, 25.79325</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>BDL</name>
+            <Point>
+                <coordinates>-72.68323, 41.93887</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>IAD</name>
+            <Point>
+                <coordinates>-77.45581, 38.94453</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>ALB</name>
+            <Point>
+                <coordinates>-73.80298, 42.74812</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>MCO</name>
+            <Point>
+                <coordinates>-81.31603, 28.42889</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>JFK</name>
+            <Point>
+                <coordinates>-73.77893, 40.63975</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-73.77893, 40.63975 -97.66987, 30.19453</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-97.66987, 30.19453 -118.40807, 33.94254</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-118.40807, 33.94254 -106.86885, 39.22316</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-106.86885, 39.22316 -104.66700, 39.85841</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-104.66700, 39.85841 -101.70593, 35.21937</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-101.70593, 35.21937 -96.85177, 32.84711</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-96.85177, 32.84711 -106.60919, 35.04022</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-106.60919, 35.04022 -95.27889, 29.64542</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-95.27889, 29.64542 -86.75355, 33.56294</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-86.75355, 33.56294 -80.29056, 25.79325</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-80.29056, 25.79325 -72.68323, 41.93887</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-72.68323, 41.93887 -77.45581, 38.94453</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-77.45581, 38.94453 -73.80298, 42.74812</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-73.80298, 42.74812 -81.31603, 28.42889</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-81.31603, 28.42889 -73.77893, 40.63975</coordinates>
+            </LineString>
+        </Placemark>
     </Document>
 </kml>
