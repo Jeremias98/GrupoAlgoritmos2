@@ -4,18 +4,118 @@ from heapq import heappush, heappop
 from clasesflycombi import Grafo
 import csv
 
-tipos_peso = ["precio", "tiempo_promedio", "cant_vuelos_entre_aeropuertos"]
-
+#-------------------------------------------------------------------------------------------
 def impresion_estandar(l_aeropuertos):
     print(" -> ".join(l_aeropuertos))
 
-#
-def recorrer_mundo(grafo, ciudad, ciudades):
+#-------------------------------------------------------------------------------------------
+def reconstruir_camino(origen, destino, padre):
+    '''Dado un origen, destino y el diccionario de padres del grafo, devuelve una lista
+    con los vertices que componen el camino en orden.'''
+    camino = []
+    actual = destino
 
-    if ciudad not in ciudades: return False	
+    while actual:
+        camino.insert(0, actual)
+        actual = padre[actual]  # Cuando itere el origen el padre es None
 
-    return True
+    return camino
+#--------------------------------------------------------------------------------------------
+def bfs(grafo, origen, destino):
+    ''' Devuelve una lista con los aeropuertos de camino minimo entre
+    origen y destino. Si no existe el destino o es None, devuelve la tupla (padre, dist).'''
+    dist = {}
+    padre = {}
+    visitados = set()
 
+    padre[origen] = None
+    dist[origen] = 0
+    visitados.add(origen)
+    cola = Cola()
+    cola.encolar(origen)
+
+    while not cola.esta_vacia():
+        v = cola.desencolar()
+        if v == destino: return reconstruir_camino(origen, destino, padre)
+        for w in grafo.adyacentes(v):
+
+            if w not in visitados:
+                visitados.add(w)
+                dist[w] = dist[v] + 1
+                padre[w] = v
+                cola.encolar(w)
+
+    return padre, dist
+
+#----------------------------------------------------------------------------------------
+def dijkstra(grafo, tipo, origen, destino):
+    ''' Devuelve una lista con los aeropuertos de camino minimo según el tipo entre
+    origen y destino. Si no existe el destino o es None, devuelve la tupla (padre, dist).'''
+    inf = float('inf')
+
+    dist = {vertice: inf for vertice in grafo} # Guardo las distancias
+    padre = {}
+    dist[origen] = 0
+    padre[origen] = None
+    heap = []
+    heappush(heap, (dist[origen], origen))
+
+    while heap:
+        # Obtiene el minimo, es como si fuera un heap de minimos
+        priority, v =  heappop(heap)
+        if destino == v: return reconstruir_camino(origen, destino, padre)
+
+        for w in grafo.adyacentes(v):
+            peso_arista = grafo.get_peso(v, w)
+            if tipo == tipos_camino[0]: peso = int(peso_arista.precio)
+            elif tipo == tipos_camino[1]: peso = int(peso_arista.tiempo_promedio)
+            else: peso = int(peso_arista.cant_vuelos_entre_aeropuertos)
+
+            if dist[v] + peso < dist[w]:
+                dist[w] = dist[v] + peso
+                padre[w] = v
+                heappush(heap, (dist[w], w))
+
+    return padre, dist
+
+#-------------------------------------------------------------------------------------------
+tipos_peso = ["precio", "tiempo_promedio", "cant_vuelos_entre_aeropuertos"]
+def prim(grafo, tipo_peso):
+	
+	vertice = grafo.get_vertice()
+	visitados = set()
+	visitados.add(vertice)
+	heap = []
+	peso = 0
+	for w in grafo.adyacentes(vertice):
+		if tipo_peso == tipos_peso[0]:
+			peso = int(grafo.get_peso(vertice, w).precio)
+		elif tipo_peso == tipos_peso[1]:
+			peso = int(grafo.get_peso(vertice, w).tiempo_promedio)
+		else:
+			peso = int(grafo.get_peso(vertice, w).cant_vuelos_entre_aeropuertos)
+		
+		heappush(heap, (peso, (vertice, w)))
+		
+	arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
+    
+	while heap:
+		priority, (v,w) = heappop(heap)
+		if w in visitados: continue
+		arbol.agregar_arista(v, w, grafo.get_peso(v,w))
+		visitados.add(w)
+		for x in grafo.adyacentes(w):
+			if x not in visitados:
+				if tipo_peso == tipos_peso[0]:
+					peso = int(grafo.get_peso(w, x).precio)
+				elif tipo_peso == tipos_peso[1]:
+					peso = int(grafo.get_peso(w, x).tiempo_promedio)
+				else:
+					peso = int(grafo.get_peso(w, x).cant_vuelos_entre_aeropuertos)
+				heappush(heap, (peso, (w,x)))
+
+	return arbol
+	
 #----------------------------------------------------------------------------------------
 tipos_camino = ["barato", "rapido"]
 def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
@@ -41,6 +141,31 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
         for aep in camino_minimo:
             ult_rec.append(aep)
         return True
+
+#-----------------------------------------------------------------------------------------
+def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades, ult_rec):
+    '''Dado una ciudad de origen y otra de destino, devuelve una lista de aeropuertos de camino minimo.'''
+    if ciudad_origen not in ciudades: return False
+    if ciudad_destino not in ciudades: return False
+
+    aips_origen = ciudades[ciudad_origen]
+    aips_destino = ciudades[ciudad_destino]
+
+    camino_resul = []
+
+    for origen in aips_origen:
+        for destino in aips_destino:
+
+            camino = bfs(grafo, origen, destino)
+            if len(camino) < len(camino_resul) or len(camino_resul) == 0:
+                camino_resul = camino
+
+    impresion_estandar(camino_resul)
+
+    while ult_rec: ult_rec.pop()
+    for aep in camino_resul:
+        ult_rec.append(aep)
+    return True
 
 #----------------------------------------------------------------------------------------
 def ordenar_vertices(dicc):
@@ -87,75 +212,6 @@ def betweness_centrality(grafo, k):
 
     return lista_centrales
 
-#----------------------------------------------------------------------------------------
-def dijkstra(grafo, tipo, origen, destino):
-    ''' Devuelve una lista con los aeropuertos de camino minimo según el tipo entre
-    origen y destino. Si no existe el destino o es None, devuelve la tupla (padre, dist).'''
-    inf = float('inf')
-
-    dist = {vertice: inf for vertice in grafo} # Guardo las distancias
-    padre = {}
-    dist[origen] = 0
-    padre[origen] = None
-    heap = []
-    heappush(heap, (dist[origen], origen))
-
-    while heap:
-        # Obtiene el minimo, es como si fuera un heap de minimos
-        priority, v =  heappop(heap)
-        if destino == v: return reconstruir_camino(origen, destino, padre)
-
-        for w in grafo.adyacentes(v):
-            peso_arista = grafo.get_peso(v, w)
-            if tipo == tipos_camino[0]: peso = int(peso_arista.precio)
-            elif tipo == tipos_camino[1]: peso = int(peso_arista.tiempo_promedio)
-            else: peso = int(peso_arista.cant_vuelos_entre_aeropuertos)
-
-            if dist[v] + peso < dist[w]:
-                dist[w] = dist[v] + peso
-                padre[w] = v
-                heappush(heap, (dist[w], w))
-
-    return padre, dist
-
-#-------------------------------------------------------------------------------------------
-def prim(grafo, tipo_peso):
-	
-	vertice = grafo.get_vertice()
-	visitados = set()
-	visitados.add(vertice)
-	heap = []
-	peso = 0
-	for w in grafo.adyacentes(vertice):
-		if tipo_peso == tipos_peso[0]:
-			peso = int(grafo.get_peso(vertice, w).precio)
-		elif tipo_peso == tipos_peso[1]:
-			peso = int(grafo.get_peso(vertice, w).tiempo_promedio)
-		else:
-			peso = int(grafo.get_peso(vertice, w).cant_vuelos_entre_aeropuertos)
-		
-		heappush(heap, (peso, (vertice, w)))
-		
-	arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
-    
-	while heap:
-		priority, (v,w) = heappop(heap)
-		if w in visitados: continue
-		arbol.agregar_arista(v, w, grafo.get_peso(v,w))
-		visitados.add(w)
-		for x in grafo.adyacentes(w):
-			if x not in visitados:
-				if tipo_peso == tipos_peso[0]:
-					peso = int(grafo.get_peso(w, x).precio)
-				elif tipo_peso == tipos_peso[1]:
-					peso = int(grafo.get_peso(w, x).tiempo_promedio)
-				else:
-					peso = int(grafo.get_peso(w, x).cant_vuelos_entre_aeropuertos)
-				heappush(heap, (peso, (w,x)))
-
-	return arbol
-	
-
 #-------------------------------------------------------------------------------------------
 def nueva_aerolinea(grafo, ruta):
 
@@ -172,71 +228,6 @@ def nueva_aerolinea(grafo, ruta):
                     writer.writerow([aip_i, aip_j, vuelo.tiempo_promedio, vuelo.precio, vuelo.cant_vuelos_entre_aeropuertos])
                     vuelos_agregados.add(vuelo)
     print("OK")
-    return True
-
-#-------------------------------------------------------------------------------------------
-def reconstruir_camino(origen, destino, padre):
-    '''Dado un origen, destino y el diccionario de padres del grafo, devuelve una lista
-    con los vertices que componen el camino en orden.'''
-    camino = []
-    actual = destino
-
-    while actual:
-        camino.insert(0, actual)
-        actual = padre[actual]  # Cuando itere el origen el padre es None
-
-    return camino
-
-#--------------------------------------------------------------------------------------------
-def bfs(grafo, origen, destino):
-    ''' Devuelve una lista con los aeropuertos de camino minimo entre
-    origen y destino. Si no existe el destino o es None, devuelve la tupla (padre, dist).'''
-    dist = {}
-    padre = {}
-    visitados = set()
-
-    padre[origen] = None
-    dist[origen] = 0
-    visitados.add(origen)
-    cola = Cola()
-    cola.encolar(origen)
-
-    while not cola.esta_vacia():
-        v = cola.desencolar()
-        if v == destino: return reconstruir_camino(origen, destino, padre)
-        for w in grafo.adyacentes(v):
-
-            if w not in visitados:
-                visitados.add(w)
-                dist[w] = dist[v] + 1
-                padre[w] = v
-                cola.encolar(w)
-
-    return padre, dist
-
-#-----------------------------------------------------------------------------------------
-def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades, ult_rec):
-    '''Dado una ciudad de origen y otra de destino, devuelve una lista de aeropuertos de camino minimo.'''
-    if ciudad_origen not in ciudades: return False
-    if ciudad_destino not in ciudades: return False
-
-    aips_origen = ciudades[ciudad_origen]
-    aips_destino = ciudades[ciudad_destino]
-
-    camino_resul = []
-
-    for origen in aips_origen:
-        for destino in aips_destino:
-
-            camino = bfs(grafo, origen, destino)
-            if len(camino) < len(camino_resul) or len(camino_resul) == 0:
-                camino_resul = camino
-
-    impresion_estandar(camino_resul)
-
-    while ult_rec: ult_rec.pop()
-    for aep in camino_resul:
-        ult_rec.append(aep)
     return True
 
 #----------------------------------------------------------------------------------------------

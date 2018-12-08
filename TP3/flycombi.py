@@ -11,9 +11,6 @@ class Aeropuerto:
         self.latitud = latitud
         self.longitud = longitud
 
-    def imprimir_datos(self):
-        print("{} {} {}".format(self.codigo, self.latitud, self.longitud))
-
 class Vuelo:
 
     def __init__(self, cod_origen, cod_destino, tiempo_promedio, precio, cant_vuelos_entre_aeropuertos):
@@ -22,9 +19,6 @@ class Vuelo:
         self.tiempo_promedio = tiempo_promedio
         self.precio = precio
         self.cant_vuelos_entre_aeropuertos = cant_vuelos_entre_aeropuertos
-
-    def imprimir_datos(self):
-        print("{} {} {} {} {}".format(self.cod_origen, self.cod_destino, self.tiempo_promedio, self.precio, self.cant_vuelos_entre_aeropuertos))
 
 
 def procesar_datos(grafo, ciudades, aeropuertos, aeropuertos_csv, vuelos_csv):
@@ -69,13 +63,14 @@ def procesar_entrada(grafo, comandos, ciudades, ult_rec, aeropuertos):
         comando = cmd_spliteado[0]
         parametros = None
 
-        if len(cmd_spliteado) > 1:
-            #parametros = cmd_spliteado[1:len(cmd_spliteado)]
-            parametros = cmd_spliteado[1].split(",")
+        if len(cmd_spliteado) > 1: parametros = cmd_spliteado[1].split(",")
+        
         if comando == "listar_operaciones": listar_operaciones(comandos)
 
         elif comando in comandos:
             if not ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos): hay_error = True
+
+        else: hay_error = True
 
         if hay_error: print("Error en comando {}".format(comando))
         #NO ESPECIFICA SI HAY QUE IMPRIMIR UN ERROR GENERAL.
@@ -107,9 +102,6 @@ def ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos)
     if comando == "centralidad" and len(parametros) == 1:
         return lib.centralidad(grafo, parametros[0])
 
-    if comando == "recorrer_mundo" and len(parametros) == 1:
-        return lib.recorrer_mundo(grafo, parametros[0], ciudades)
-
     if comando == "nueva_aerolinea" and len(parametros) == 1:
         return lib.nueva_aerolinea(grafo, parametros[0])
 
@@ -120,8 +112,7 @@ def main():
     grafo = Grafo()
     ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Cod. Aeropuertos
     aeropuertos = {} # # Guardo en un 'hash' los cod de aeropuerto asi accedo en O(1) - Claves = Class Aeropuerto
-    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", 
-    "vacaciones", "exportar_kml", "recorrer_mundo", "nueva_aerolinea", "itinerario"]
+    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones", "exportar_kml", "itinerario"]
     ultimo_recorrido = []
     
     if len(sys.argv) < 3:
@@ -130,6 +121,5 @@ def main():
     else:
         procesar_datos(grafo, ciudades, aeropuertos, sys.argv[1], sys.argv[2])
         procesar_entrada(grafo, comandos, ciudades, ultimo_recorrido, aeropuertos)
-
 
 main()
