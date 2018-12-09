@@ -1,1 +1,3 @@
-recorrer_mundo Gotica
+camino_mas rapido,San Diego,New York
+camino_mas barato,San Diego,New York
+camino_mas barato,Orlando,New York

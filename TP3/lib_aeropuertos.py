@@ -67,7 +67,7 @@ def dijkstra(grafo, tipo, origen, destino):
 
         for w in grafo.adyacentes(v):
             peso_arista = grafo.get_peso(v, w)
-            if tipo == tipos_camino[0]: peso = int(peso_arista.precio)
+            if tipo == tipos_camino[0]: peso = float(peso_arista.precio)
             elif tipo == tipos_camino[1]: peso = int(peso_arista.tiempo_promedio)
             else: peso = int(peso_arista.cant_vuelos_entre_aeropuertos)
 
@@ -81,7 +81,7 @@ def dijkstra(grafo, tipo, origen, destino):
 #-------------------------------------------------------------------------------------------
 tipos_peso = ["precio", "tiempo_promedio", "cant_vuelos_entre_aeropuertos"]
 def prim(grafo, tipo_peso):
-	
+
 	vertice = grafo.get_vertice()
 	visitados = set()
 	visitados.add(vertice)
@@ -94,11 +94,11 @@ def prim(grafo, tipo_peso):
 			peso = int(grafo.get_peso(vertice, w).tiempo_promedio)
 		else:
 			peso = int(grafo.get_peso(vertice, w).cant_vuelos_entre_aeropuertos)
-		
+
 		heappush(heap, (peso, (vertice, w)))
-		
+
 	arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
-    
+
 	while heap:
 		priority, (v,w) = heappop(heap)
 		if w in visitados: continue
@@ -115,7 +115,7 @@ def prim(grafo, tipo_peso):
 				heappush(heap, (peso, (w,x)))
 
 	return arbol
-	
+
 #----------------------------------------------------------------------------------------
 tipos_camino = ["barato", "rapido"]
 def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
@@ -129,10 +129,13 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
 
         camino_minimo = []
 
+        suma_pesos = 0
+
         for aep_desde in aeps_desde:
             for aep_hasta in aeps_hasta:
                 camino = dijkstra(grafo, tipo, aep_desde, aep_hasta)
-                if len(camino) < len(camino_minimo) or len(camino_minimo) == 0:
+
+                if len(camino_minimo) == 0 or sumar_pesos(grafo, camino, tipo) < sumar_pesos(grafo, camino_minimo, tipo):
                     camino_minimo = camino
 
         impresion_estandar(camino_minimo)
@@ -141,6 +144,25 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
         for aep in camino_minimo:
             ult_rec.append(aep)
         return True
+
+def sumar_pesos(grafo, lista, tipo):
+    if tipo not in tipos_camino: return -1
+
+    suma = 0
+    ultimo_vertice = lista[0]
+    peso_arista = 0
+    for i in range(1, len(lista)):
+        if tipo == tipos_camino[0]:
+            peso_arista = int(grafo.get_peso(ultimo_vertice,lista[i]).precio)
+        else:
+            peso_arista = int(grafo.get_peso(ultimo_vertice,lista[i]).tiempo_promedio)
+
+        suma += peso_arista
+
+        ultimo_vertice = lista[i]
+
+    return suma
+
 
 #-----------------------------------------------------------------------------------------
 def camino_minimo_escalas(grafo, ciudad_origen, ciudad_destino, ciudades, ult_rec):
@@ -222,7 +244,7 @@ def nueva_aerolinea(grafo, ruta):
         writer = csv.writer(file, delimiter= ',')
         for aip_i in arbol:
             for aip_j in arbol.adyacentes(aip_i):
-                
+
                 vuelo = arbol.get_peso(aip_i, aip_j)
                 if vuelo not in vuelos_agregados:
                     writer.writerow([aip_i, aip_j, vuelo.tiempo_promedio, vuelo.precio, vuelo.cant_vuelos_entre_aeropuertos])
@@ -273,7 +295,7 @@ def _vacaciones(grafo, v, n, recorrido, dist):
         if (n == 1 and w != recorrido[0]): continue #CONDICION
         if (n > 1 and w in recorrido): continue     #CONDICION
         if (dist[w] >= n): continue                 #PODA, SI dist[w] >= n NO PUEDE RETORNAR A ORIGEN
-            
+
         recorrido.append(w)
         if _vacaciones(grafo, w, n-1, recorrido, dist):
             return True
@@ -282,27 +304,27 @@ def _vacaciones(grafo, v, n, recorrido, dist):
     return False
 
 def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
-    
+
     if ciudad_origen not in ciudades: return False
-    
+
     aips_origen = ciudades[ciudad_origen]
 
     if n <= 1: return False
-    
+
     recorrido = []
     for origen in aips_origen:
-        
+
         padre, dist = bfs(grafo, origen, None)
-        recorrido.append(origen)    
+        recorrido.append(origen)
         hay_recorrido = _vacaciones(grafo, origen, n, recorrido, dist)
         if hay_recorrido: break
-    
-    if hay_recorrido: 
+
+    if hay_recorrido:
         impresion_estandar(recorrido)
         while ult_rec: ult_rec.pop()
         for aep in recorrido:
             ult_rec.append(aep)
-    
+
     else: print("No se encontro recorrido recorrido")
     return True
 
@@ -323,23 +345,23 @@ def itinerario_cultural(grafo, ruta, ciudades, ult_rec):
     while len(recorrido) < len(ciudades_visitar):  #PRIMERO CALCULO UN CAMINO VALIDO SEGUN LAS RESTRICCIONES
         for ciudad in ciudades_visitar:
             if ciudad in recorrido: continue
-  
+
             if ciudad not in anteriores:
                 recorrido.append(ciudad)
             else:
                 cond = True
                 for anterior in anteriores[ciudad]:
-                    if anterior not in recorrido: 
+                    if anterior not in recorrido:
                         cond = False
-                    
+
                 if cond:
                     recorrido.append(ciudad)
-                    anteriores.pop(ciudad)  
+                    anteriores.pop(ciudad)
 
     print(', '.join(recorrido))                 #IMPRIMO CAMINO Y LE CALCULO CAMINO MINIMO DE ESCALAS A CADA DESTINO
-    
+
     for i in range(len(recorrido) - 1):
         condicion = camino_minimo_escalas(grafo, recorrido[i], recorrido[i+1], ciudades, ult_rec)
         if condicion == False: break
-    
+
     return condicion
