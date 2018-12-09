@@ -63,7 +63,7 @@ def procesar_entrada(grafo, comandos, ciudades, ult_rec, aeropuertos):
         parametros = None
 
         if len(cmd_spliteado) > 1: parametros = cmd_spliteado[1].split(",")
-        
+
         if comando == "listar_operaciones": listar_operaciones(comandos)
 
         elif comando in comandos:
@@ -87,7 +87,7 @@ def ejecutar_comando(grafo, comando, parametros, ciudades, ult_rec, aeropuertos)
         return lib.itinerario_cultural(grafo, parametros[0], ciudades, ult_rec)
 
     if comando == "vacaciones" and len(parametros) == 2:
-        return lib.vacaciones(grafo, parametros[0], int(parametros[1]), ciudades, ult_rec)   
+        return lib.vacaciones(grafo, parametros[0], int(parametros[1]), ciudades, ult_rec)
 
     if comando == "exportar_kml" and len(parametros) == 1:
         return lib.exportar_kml(parametros[0], ult_rec, aeropuertos)
@@ -113,7 +113,7 @@ def main():
     aeropuertos = {} # # Guardo en un 'hash' los cod de aeropuerto asi accedo en O(1) - Claves = Class Aeropuerto
     comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "exportar_kml", "itinerario", "vacaciones"]
     ultimo_recorrido = []
-    
+
     if len(sys.argv) < 3:
         print("Cantidad de argumentos inválida") # Hay que imprimirlo?
 
