@@ -1,14 +1,14 @@
 listar_operaciones
-que debe pasar?
-camino_mas parametro_1 parametro_2 parametro_3
 camino_escalas San Diego,New York
 camino_mas rapido,Albuquerque,New York
 camino_mas rapido,San Diego,New York
 camino_mas barato,San Diego,New York
-camino_mas pepe,San Diego,New York
+camino_mas barato,Orlando,New York
 centralidad 5
+centralidad 40
 nueva_aerolinea bAIRos.csv
 vacaciones San Diego,6
 vacaciones New York,15
+vacaciones New York,70
 exportar_kml ejemplo.kml
 itinerario itinerario_ejemplo.csv

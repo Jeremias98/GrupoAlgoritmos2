@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from clasesflycombi import Grafo
 import lib_aeropuertos as lib
 import sys
@@ -50,8 +51,6 @@ def procesar_datos(grafo, ciudades, aeropuertos, aeropuertos_csv, vuelos_csv):
 
 
 def procesar_entrada(grafo, comandos, ciudades, ult_rec, aeropuertos):
-
-    print("FlyComby >> ", end="", flush=True)  #Se debe imprimir el encabezado?
 
     linea = sys.stdin.readline()
     while linea:
@@ -112,7 +111,7 @@ def main():
     grafo = Grafo()
     ciudades = {} # Guardo en un 'hash' las ciudades por nombre asi accedo en O(1) - Claves = Cod. Aeropuertos
     aeropuertos = {} # # Guardo en un 'hash' los cod de aeropuerto asi accedo en O(1) - Claves = Class Aeropuerto
-    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "vacaciones", "exportar_kml", "itinerario"]
+    comandos = ["camino_mas", "camino_escalas", "centralidad", "nueva_aerolinea", "exportar_kml", "itinerario", "vacaciones"]
     ultimo_recorrido = []
     
     if len(sys.argv) < 3:

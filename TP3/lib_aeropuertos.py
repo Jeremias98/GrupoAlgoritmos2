@@ -266,15 +266,20 @@ def exportar_kml(ruta, l_cod_aeps, aeropuertos):
     return True
 
 #----------------------------------------------------------------------------------------------------
-def _vacaciones(grafo, v, n, recorrido):
-    if n == 0: return recorrido
+def _vacaciones(grafo, v, n, recorrido, dist):
+    if n == 0: return True
 
     for w in grafo.adyacentes(v):
-        if (w == recorrido[0] and n == 1) or (w not in recorrido and n > 1):
-            recorrido.append(w)
-            return _vacaciones(grafo, w, n-1, recorrido)
+        if (n == 1 and w != recorrido[0]): continue #CONDICION
+        if (n > 1 and w in recorrido): continue     #CONDICION
+        if (dist[w] >= n): continue                 #PODA, SI dist[w] >= n NO PUEDE RETORNAR A ORIGEN
+            
+        recorrido.append(w)
+        if _vacaciones(grafo, w, n-1, recorrido, dist):
+            return True
 
-    return []
+    recorrido.remove(v)
+    return False
 
 def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
     
@@ -286,14 +291,13 @@ def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
     
     recorrido = []
     for origen in aips_origen:
-        for w in grafo.adyacentes(origen):
-                
-                recorrido.append(origen)
-                recorrido = _vacaciones(grafo, w, n, recorrido)
-                if recorrido: break
-        if recorrido:break
+        
+        padre, dist = bfs(grafo, origen, None)
+        recorrido.append(origen)    
+        hay_recorrido = _vacaciones(grafo, origen, n, recorrido, dist)
+        if hay_recorrido: break
     
-    if recorrido: 
+    if hay_recorrido: 
         impresion_estandar(recorrido)
         while ult_rec: ult_rec.pop()
         for aep in recorrido:
