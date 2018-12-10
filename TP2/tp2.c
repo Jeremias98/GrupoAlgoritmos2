@@ -2,6 +2,12 @@
 #define TAM_CLAVE_ABB 30
 #define TAM_CLAVE_HEAP 12
 
+#define AGREGAR_ARCHIVO "agregar_archivo"
+#define VER_TABLERO "ver_tablero"
+#define INFO_VUELO "info_vuelo"
+#define PRIORIDAD_VUELOS "prioridad_vuelos"
+#define BORRAR "borrar"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -68,15 +74,14 @@ void vuelo_destruir(vuelo_t* vuelo) {
 }
 
 char** strv_comandos() {
-    char** strv = malloc(sizeof(char*) * 6);
+    char** strv = malloc(sizeof(char*) * 5);
     if (!strv) return NULL;
 
-    strv[0] = strdup("agregar_archivo");
-    strv[1] = strdup("ver_tablero");
-    strv[2] = strdup("info_vuelo");
-    strv[3] = strdup("prioridad_vuelos");
-    strv[4] = strdup("borrar");
-    strv[5] = NULL;
+    strv[0] = AGREGAR_ARCHIVO;
+    strv[1] = VER_TABLERO;
+    strv[2] = INFO_VUELO;
+    strv[3] = PRIORIDAD_VUELOS;
+    strv[4] = BORRAR;
     return strv;
 }
 
@@ -154,27 +159,22 @@ bool agregar_archivo(const char* ruta, abb_t* abb, hash_t* hash) {
 void imprimir_pila_asc(pila_t* p_desc, int k_vuelos, bool asc, bool liberar) {
 
     int cont = k_vuelos;    
+    pila_t* pila;
     if (asc) {
 
         pila_t* p_asc = pila_crear();
         while (!pila_esta_vacia(p_desc)) pila_apilar(p_asc, pila_desapilar(p_desc));
-        while (cont > 0 && !pila_esta_vacia(p_asc)) {    
-            
-            char* result = pila_desapilar(p_asc);
-            fprintf(stdout, "%s\n", result);
-            if (liberar) free(result);
-            cont --;
-        }
-        pila_destruir(p_asc);
-    } else {
-        while (cont > 0 && !pila_esta_vacia(p_desc)) {
+        pila = p_asc;
+    }    
+    else pila = p_desc;
+    while (cont > 0 && !pila_esta_vacia(pila)) {
 
-            char* result = pila_desapilar(p_desc);
+            char* result = pila_desapilar(pila);
             fprintf(stdout, "%s\n", result);
             if (liberar) free(result);
             cont --;
-        }
     }
+    if (asc) pila_destruir(pila);
     return;
 }
 
@@ -387,7 +387,7 @@ int main(int argc, char* argr[]) {
         free_strv(strv_linea);
     }
     free(linea);
-    free_strv(strv_comands);
+    free(strv_comands);
     abb_destruir(abb);
     hash_destruir(hash);
     return 0;
