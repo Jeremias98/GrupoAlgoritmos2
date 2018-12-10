@@ -416,9 +416,99 @@
             </Point>
         </Placemark>
         <Placemark>
-            <name>LGB</name>
+            <name>SNA</name>
             <Point>
-                <coordinates>-118.15161, 33.81772</coordinates>
+                <coordinates>-117.86822, 33.67566</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>MCI</name>
+            <Point>
+                <coordinates>-94.71391, 39.29761</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>IND</name>
+            <Point>
+                <coordinates>-86.29438, 39.71733</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>RDU</name>
+            <Point>
+                <coordinates>-78.78747, 35.87764</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>DCA</name>
+            <Point>
+                <coordinates>-77.03772, 38.85208</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>OMA</name>
+            <Point>
+                <coordinates>-95.89417, 41.30252</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>STL</name>
+            <Point>
+                <coordinates>-90.35999, 38.74769</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>SAT</name>
+            <Point>
+                <coordinates>-98.46978, 29.53369</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>MSY</name>
+            <Point>
+                <coordinates>-90.25803, 29.99339</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>MKE</name>
+            <Point>
+                <coordinates>-87.89658, 42.94722</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>TTN</name>
+            <Point>
+                <coordinates>-74.81347, 40.27669</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>PBI</name>
+            <Point>
+                <coordinates>-80.09559, 26.68316</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>PIT</name>
+            <Point>
+                <coordinates>-80.23287, 40.49147</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>PHL</name>
+            <Point>
+                <coordinates>-75.24114, 39.87195</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>SJU</name>
+            <Point>
+                <coordinates>-66.00183, 18.43942</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark>
+            <name>STT</name>
+            <Point>
+                <coordinates>-64.97336, 18.33731</coordinates>
             </Point>
         </Placemark>
         <Placemark>
@@ -769,12 +859,87 @@
         </Placemark>
         <Placemark>
             <LineString>
-                <coordinates>-121.59077, 38.69542 -118.15161, 33.81772</coordinates>
+                <coordinates>-121.59077, 38.69542 -117.86822, 33.67566</coordinates>
             </LineString>
         </Placemark>
         <Placemark>
             <LineString>
-                <coordinates>-118.15161, 33.81772 -73.77893, 40.63975</coordinates>
+                <coordinates>-117.86822, 33.67566 -94.71391, 39.29761</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-94.71391, 39.29761 -86.29438, 39.71733</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-86.29438, 39.71733 -78.78747, 35.87764</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-78.78747, 35.87764 -77.03772, 38.85208</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-77.03772, 38.85208 -95.89417, 41.30252</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-95.89417, 41.30252 -90.35999, 38.74769</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-90.35999, 38.74769 -98.46978, 29.53369</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-98.46978, 29.53369 -90.25803, 29.99339</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-90.25803, 29.99339 -87.89658, 42.94722</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-87.89658, 42.94722 -74.81347, 40.27669</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-74.81347, 40.27669 -80.09559, 26.68316</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-80.09559, 26.68316 -80.23287, 40.49147</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-80.23287, 40.49147 -75.24114, 39.87195</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-75.24114, 39.87195 -66.00183, 18.43942</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-66.00183, 18.43942 -64.97336, 18.33731</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <LineString>
+                <coordinates>-64.97336, 18.33731 -73.77893, 40.63975</coordinates>
             </LineString>
         </Placemark>
     </Document>

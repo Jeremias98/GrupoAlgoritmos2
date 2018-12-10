@@ -1,0 +1,5 @@
+vacaciones Aspen,4 
+vacaciones Ithaca,8
+vacaciones Minneapolis,12
+vacaciones Chicago,16
+vacaciones Mammoth Lakes,8

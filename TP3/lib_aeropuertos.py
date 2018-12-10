@@ -288,16 +288,24 @@ def exportar_kml(ruta, l_cod_aeps, aeropuertos):
     return True
 
 #----------------------------------------------------------------------------------------------------
-def _vacaciones(grafo, v, n, recorrido, dist):
-    if n == 0: return True
+def adyacentes_fueron_visitados(grafo, v, recorrido):
 
     for w in grafo.adyacentes(v):
+        if w not in recorrido: return False
+    return True
+
+def _vacaciones(grafo, v, n, recorrido, dist, padre):
+    if n == 0: return True
+    
+    for w in grafo.adyacentes(v):
+
         if (n == 1 and w != recorrido[0]): continue #CONDICION
         if (n > 1 and w in recorrido): continue     #CONDICION
-        if (dist[w] >= n): continue                 #PODA, SI dist[w] >= n NO PUEDE RETORNAR A ORIGEN
+        if (dist[w] >= n): continue                 #PODA
+        if (n > 1 and adyacentes_fueron_visitados(grafo, recorrido[0], recorrido)): break   #PODA
 
         recorrido.append(w)
-        if _vacaciones(grafo, w, n-1, recorrido, dist):
+        if _vacaciones(grafo, w, n-1, recorrido, dist, padre):
             return True
 
     recorrido.remove(v)
@@ -308,7 +316,6 @@ def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
     if ciudad_origen not in ciudades: return False
 
     aips_origen = ciudades[ciudad_origen]
-
     if n <= 1: return False
 
     recorrido = []
@@ -316,16 +323,16 @@ def vacaciones(grafo, ciudad_origen, n, ciudades, ult_rec):
 
         padre, dist = bfs(grafo, origen, None)
         recorrido.append(origen)
-        hay_recorrido = _vacaciones(grafo, origen, n, recorrido, dist)
+        hay_recorrido = _vacaciones(grafo, origen, n, recorrido, dist, padre)
         if hay_recorrido: break
 
-    if hay_recorrido:
+    if recorrido:
         impresion_estandar(recorrido)
         while ult_rec: ult_rec.pop()
         for aep in recorrido:
             ult_rec.append(aep)
 
-    else: print("No se encontro recorrido recorrido")
+    else: print("No se encontro recorrido")
     return True
 
 #-------------------------------------------------------------------------------------------------
