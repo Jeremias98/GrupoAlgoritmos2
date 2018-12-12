@@ -85,7 +85,8 @@ def dijkstra(grafo, tipo, origen, destino, peso_max):
             peso_arista = grafo.get_peso(v, w)
             if tipo == tipos_peso[0]: peso = float(peso_arista.precio)
             elif tipo == tipos_peso[1]: peso = int(peso_arista.tiempo_promedio)
-            else: peso = -int(peso_arista.cant_vuelos_entre_aeropuertos) + peso_max 
+            #else: peso = -int(peso_arista.cant_vuelos_entre_aeropuertos) + peso_max
+            else: peso = peso_max  / int(peso_arista.cant_vuelos_entre_aeropuertos)
             # El vuelo que tenga + frecuencia tendrá peso 1, los que le sigan tendran un peso proporcional
             # a la diferencia entre cant de vuelos
 
@@ -145,7 +146,7 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
         if tipo not in tipos_camino: return False
         elif tipo == tipos_camino[0]: tipo = tipos_peso[0]
         elif tipo == tipos_camino[1]: tipo = tipos_peso[1]
-        else: tipo = tipos_peso[3] 
+        else: tipo = tipos_peso[3]
         camino_minimo = []
 
         suma_pesos = 0
@@ -315,7 +316,7 @@ def adyacentes_fueron_visitados(grafo, v, recorrido):
 
 def _vacaciones(grafo, v, n, recorrido, dist, padre):
     if n == 0: return True
-    
+
     for w in grafo.adyacentes(v):
 
         if (n == 1 and w != recorrido[0]): continue #CONDICION
