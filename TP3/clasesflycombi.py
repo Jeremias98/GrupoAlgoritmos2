@@ -91,6 +91,15 @@ class Grafo():
         ''' Devuelve un vertice aleatorio.'''
         return random.choice(list(self.vertices()))
 
+    def get_aristas(self):
+        aristas = []
+
+        for v in self._vertices:
+            for w in self._vertices[v]:
+                if (v, w) in aristas or (w, v) in aristas: continue
+                aristas.append((v, w))
+        return aristas    
+
     def len_(self):
         '''Devuelve la cantidad de vertices del grafo.'''
         return self.len

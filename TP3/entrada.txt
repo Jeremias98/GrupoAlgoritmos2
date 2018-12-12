@@ -9,6 +9,5 @@ centralidad 40
 nueva_aerolinea bAIRos.csv
 vacaciones San Diego,6
 vacaciones New York,15
-vacaciones New York,85
 exportar_kml ejemplo.kml
 itinerario itinerario_ejemplo.csv

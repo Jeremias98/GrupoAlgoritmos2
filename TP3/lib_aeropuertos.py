@@ -4,6 +4,7 @@ from heapq import heappush, heappop
 from clasesflycombi import Grafo
 import csv
 
+tipos_peso = ["precio", "tiempo_promedio", "cant_vuelos_entre_aeropuertos"]
 #-------------------------------------------------------------------------------------------
 def impresion_estandar(l_aeropuertos):
     print(" -> ".join(l_aeropuertos))
@@ -48,7 +49,22 @@ def bfs(grafo, origen, destino):
     return padre, dist
 
 #----------------------------------------------------------------------------------------
-def dijkstra(grafo, tipo, origen, destino):
+def get_peso_max(grafo, tipo):
+    peso_max = 0
+
+    aristas = grafo.get_aristas()
+    for v, w in aristas:
+        peso_arista = grafo.get_peso(v, w)
+        if tipo == tipos_peso[0] and int(peso_arista.precio) > peso_max:
+            peso_max = int(peso_arista.precio)
+        if tipo == tipos_peso[1] and int(peso_arista.tiempo_promedio) > peso_max:
+            peso_max = int(peso_arista.tiempo_promedio)
+        if tipo == tipos_peso[2] and int(peso_arista.cant_vuelos_entre_aeropuertos) > peso_max:
+            peso_max = int(peso_arista.cant_vuelos_entre_aeropuertos)
+
+    return peso_max
+
+def dijkstra(grafo, tipo, origen, destino, peso_max):
     ''' Devuelve una lista con los aeropuertos de camino minimo según el tipo entre
     origen y destino. Si no existe el destino o es None, devuelve la tupla (padre, dist).'''
     inf = float('inf')
@@ -67,9 +83,11 @@ def dijkstra(grafo, tipo, origen, destino):
 
         for w in grafo.adyacentes(v):
             peso_arista = grafo.get_peso(v, w)
-            if tipo == tipos_camino[0]: peso = float(peso_arista.precio)
-            elif tipo == tipos_camino[1]: peso = int(peso_arista.tiempo_promedio)
-            else: peso = int(peso_arista.cant_vuelos_entre_aeropuertos)
+            if tipo == tipos_peso[0]: peso = float(peso_arista.precio)
+            elif tipo == tipos_peso[1]: peso = int(peso_arista.tiempo_promedio)
+            else: peso = -int(peso_arista.cant_vuelos_entre_aeropuertos) + peso_max 
+            # El vuelo que tenga + frecuencia tendrá peso 1, los que le sigan tendran un peso proporcional
+            # a la diferencia entre cant de vuelos
 
             if dist[v] + peso < dist[w]:
                 dist[w] = dist[v] + peso
@@ -79,42 +97,41 @@ def dijkstra(grafo, tipo, origen, destino):
     return padre, dist
 
 #-------------------------------------------------------------------------------------------
-tipos_peso = ["precio", "tiempo_promedio", "cant_vuelos_entre_aeropuertos"]
 def prim(grafo, tipo_peso):
 
-	vertice = grafo.get_vertice()
-	visitados = set()
-	visitados.add(vertice)
-	heap = []
-	peso = 0
-	for w in grafo.adyacentes(vertice):
-		if tipo_peso == tipos_peso[0]:
-			peso = int(grafo.get_peso(vertice, w).precio)
-		elif tipo_peso == tipos_peso[1]:
-			peso = int(grafo.get_peso(vertice, w).tiempo_promedio)
-		else:
-			peso = int(grafo.get_peso(vertice, w).cant_vuelos_entre_aeropuertos)
+    vertice = grafo.get_vertice()
+    visitados = set()
+    visitados.add(vertice)
+    heap = []
+    peso = 0
+    for w in grafo.adyacentes(vertice):
+        if tipo_peso == tipos_peso[0]:
+            peso = int(grafo.get_peso(vertice, w).precio)
+        elif tipo_peso == tipos_peso[1]:
+            peso = int(grafo.get_peso(vertice, w).tiempo_promedio)
+        else:
+            peso = int(grafo.get_peso(vertice, w).cant_vuelos_entre_aeropuertos)
 
-		heappush(heap, (peso, (vertice, w)))
+        heappush(heap, (peso, (vertice, w)))
 
-	arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
+    arbol = Grafo(grafo.vertices())  #Genera un grafo solo con los vertices
 
-	while heap:
-		priority, (v,w) = heappop(heap)
-		if w in visitados: continue
-		arbol.agregar_arista(v, w, grafo.get_peso(v,w))
-		visitados.add(w)
-		for x in grafo.adyacentes(w):
-			if x not in visitados:
-				if tipo_peso == tipos_peso[0]:
-					peso = int(grafo.get_peso(w, x).precio)
-				elif tipo_peso == tipos_peso[1]:
-					peso = int(grafo.get_peso(w, x).tiempo_promedio)
-				else:
-					peso = int(grafo.get_peso(w, x).cant_vuelos_entre_aeropuertos)
-				heappush(heap, (peso, (w,x)))
+    while heap:
+        priority, (v,w) = heappop(heap)
+        if w in visitados: continue
+        arbol.agregar_arista(v, w, grafo.get_peso(v,w))
+        visitados.add(w)
+        for x in grafo.adyacentes(w):
+            if x not in visitados:
+                if tipo_peso == tipos_peso[0]:
+                    peso = int(grafo.get_peso(w, x).precio)
+                elif tipo_peso == tipos_peso[1]:
+                    peso = int(grafo.get_peso(w, x).tiempo_promedio)
+                else:
+                    peso = int(grafo.get_peso(w, x).cant_vuelos_entre_aeropuertos)
+                heappush(heap, (peso, (w,x)))
 
-	return arbol
+    return arbol
 
 #----------------------------------------------------------------------------------------
 tipos_camino = ["barato", "rapido"]
@@ -126,14 +143,16 @@ def camino_mas(grafo, tipo, desde, hasta, ciudades, ult_rec):
         aeps_hasta = ciudades[hasta]
 
         if tipo not in tipos_camino: return False
-
+        elif tipo == tipos_camino[0]: tipo = tipos_peso[0]
+        elif tipo == tipos_camino[1]: tipo = tipos_peso[1]
+        else: tipo = tipos_peso[3] 
         camino_minimo = []
 
         suma_pesos = 0
 
         for aep_desde in aeps_desde:
             for aep_hasta in aeps_hasta:
-                camino = dijkstra(grafo, tipo, aep_desde, aep_hasta)
+                camino = dijkstra(grafo, tipo, aep_desde, aep_hasta, None)
 
                 if len(camino_minimo) == 0 or sumar_pesos(grafo, camino, tipo) < sumar_pesos(grafo, camino_minimo, tipo):
                     camino_minimo = camino
@@ -210,16 +229,16 @@ def betweness_centrality(grafo, k):
     cent = {} # Inicializo la centralidad
     for v in grafo: cent[v] = 0
 
+    peso_max = get_peso_max(grafo, tipos_peso[2]) + 1
     for v in grafo:
-        padre, dist = dijkstra(grafo, "rapido", v, None)
+        padre, dist = dijkstra(grafo, tipos_peso[2], v, None, peso_max)
         cent_aux = {}
         for w in grafo: cent_aux[w] = 0
 
         vertices_ordenados = ordenar_vertices(dist)
         for w in vertices_ordenados:
             if w == v: continue
-            #cent_aux[padre[w]] +=  1 + cent_aux[w]
-            cent_aux[padre[w]] +=  int(grafo.get_peso(padre[w], w).cant_vuelos_entre_aeropuertos) + cent_aux[w]
+            cent_aux[padre[w]] +=  1 + cent_aux[w]
         for w in grafo:
             if w == v: continue
             cent[w] += cent_aux[w]
